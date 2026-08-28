@@ -15,7 +15,6 @@
     .title-box p { font-size: 12px; color: #64748b; }
     
     .btn-principal { background: #2563eb; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; }
-    .btn-principal:hover { background: #1d4ed8; }
     .btn-secundario { background: #e2e8f0; color: #475569; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; }
 
     main { max-width: 1100px; margin: 20px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 20px; }
@@ -26,11 +25,11 @@
     .card h3 { font-size: 22px; color: #0f172a; margin: 4px 0; font-weight: bold; }
     .card span { font-size: 11px; color: #94a3b8; }
 
-    .form-card { background: #fff; border: 2px solid #2563eb; border-radius: 16px; padding: 20px; display: none; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1); }
+    .form-card { background: #fff; border: 2px solid #2563eb; border-radius: 16px; padding: 20px; display: none; margin-bottom: 10px; }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group label { font-size: 12px; color: #475569; font-weight: 600; }
-    .form-group input, .form-group select, .form-group textarea { border: 1px solid #cbd5e1; background: #f8fafc; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; }
+    .form-group input, .form-group select { border: 1px solid #cbd5e1; background: #f8fafc; padding: 10px; border-radius: 8px; font-size: 13px; }
     .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
 
     .table-container { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; }
@@ -42,21 +41,21 @@
     td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
     
     .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #f1f5f9; color: #475569; }
-    .btn-danger { background: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; }
+    .btn-danger { background: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo-container">
-      <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="CELUPRO Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x45?text=CELUPRO';">
+      <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="CELUPRO Logo" class="logo-img">
       <div class="title-box">
         <h1>CELUPRO</h1>
         <p>Sistema de Gestión</p>
       </div>
     </div>
 
-    <button type="button" class="btn-principal" id="btnNuevoForm">+ Crear Nueva Orden</button>
+    <button type="button" class="btn-principal" onclick="abrirFormulario()">+ Crear Nueva Orden</button>
   </header>
 
   <main>
@@ -122,12 +121,12 @@
 
         <div class="form-group">
           <label>Costo Total ($)</label>
-          <input type="number" id="montoTotal" value="0">
+          <input type="number" id="montoTotal" value="0" oninput="calcularResta()">
         </div>
 
         <div class="form-group">
           <label>Abono ($)</label>
-          <input type="number" id="montoAbono" value="0">
+          <input type="number" id="montoAbono" value="0" oninput="calcularResta()">
         </div>
 
         <div class="form-group">
@@ -137,15 +136,15 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn-secundario" id="btnCancelarForm">Cancelar</button>
-        <button type="button" class="btn-principal" id="btnGuardar">Guardar Orden</button>
+        <button type="button" class="btn-secundario" onclick="cerrarFormulario()">Cancelar</button>
+        <button type="button" class="btn-principal" onclick="guardarOrden()">Guardar Orden</button>
       </div>
     </div>
 
     <div class="table-container">
       <div class="table-header">
         <h3 style="font-size:16px; color:#0f172a;">Órdenes recientes</h3>
-        <input type="text" id="buscar" class="search-input" placeholder="Buscar cliente, equipo o ID...">
+        <input type="text" id="buscar" class="search-input" placeholder="Buscar cliente, equipo o ID..." oninput="filtrarOrdenes()">
       </div>
 
       <div style="overflow-x: auto;">
@@ -168,152 +167,131 @@
   </main>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      let ordenes = [];
-      let contadorID = 101;
+    var ordenes = [];
+    var contadorID = 101;
 
-      const btnNuevoForm = document.getElementById('btnNuevoForm');
-      const btnCancelarForm = document.getElementById('btnCancelarForm');
-      const btnGuardar = document.getElementById('btnGuardar');
-      const formCard = document.getElementById('seccionFormulario');
-      const montoTotalInput = document.getElementById('montoTotal');
-      const montoAbonoInput = document.getElementById('montoAbono');
-      const buscarInput = document.getElementById('buscar');
+    function abrirFormulario() {
+      document.getElementById('seccionFormulario').style.display = 'block';
+    }
 
-      btnNuevoForm.addEventListener('click', function() {
-        if (formCard.style.display === 'block') {
-          formCard.style.display = 'none';
-        } else {
-          formCard.style.display = 'block';
-        }
-      });
+    function cerrarFormulario() {
+      document.getElementById('seccionFormulario').style.display = 'none';
+    }
 
-      btnCancelarForm.addEventListener('click', function() {
-        formCard.style.display = 'none';
-      });
+    function calcularResta() {
+      var total = parseFloat(document.getElementById('montoTotal').value) || 0;
+      var abono = parseFloat(document.getElementById('montoAbono').value) || 0;
+      var resta = total - abono;
+      document.getElementById('montoResta').value = resta > 0 ? resta : 0;
+    }
 
-      function calcularResta() {
-        const total = parseFloat(montoTotalInput.value) || 0;
-        const abono = parseFloat(montoAbonoInput.value) || 0;
-        const resta = total - abono;
-        document.getElementById('montoResta').value = resta > 0 ? resta : 0;
+    function guardarOrden() {
+      var clienteVal = document.getElementById('cliente').value.trim();
+      var equipoVal = document.getElementById('equipo').value.trim();
+
+      if (!clienteVal || !equipoVal) {
+        alert('Por favor completa el Nombre del Cliente y el Equipo.');
+        return;
       }
 
-      montoTotalInput.addEventListener('input', calcularResta);
-      montoAbonoInput.addEventListener('input', calcularResta);
+      var total = parseFloat(document.getElementById('montoTotal').value) || 0;
+      var abono = parseFloat(document.getElementById('montoAbono').value) || 0;
 
-      btnGuardar.addEventListener('click', function() {
-        const clienteVal = document.getElementById('cliente').value.trim();
-        const equipoVal = document.getElementById('equipo').value.trim();
+      var nuevaOrden = {
+        id: '#ORD-' + contadorID,
+        cliente: clienteVal,
+        telefono: document.getElementById('telefono').value.trim() || 'N/A',
+        equipo: equipoVal,
+        falla: document.getElementById('falla').value.trim() || 'Sin diagnóstico',
+        tecnico: document.getElementById('tecnico').value,
+        total: total,
+        abono: abono,
+        resta: Math.max(0, total - abono),
+        estado: 'En Revision'
+      };
 
-        if (!clienteVal || !equipoVal) {
-          alert('Por favor completa el Nombre del Cliente y el Equipo.');
-          return;
-        }
+      ordenes.unshift(nuevaOrden);
+      contadorID++;
 
-        const total = parseFloat(montoTotalInput.value) || 0;
-        const abono = parseFloat(montoAbonoInput.value) || 0;
+      localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+      localStorage.setItem('celupro_contador', contadorID.toString());
 
-        const nuevaOrden = {
-          id: '#ORD-' + contadorID,
-          cliente: clienteVal,
-          telefono: document.getElementById('telefono').value.trim() || 'N/A',
-          equipo: equipoVal,
-          falla: document.getElementById('falla').value.trim() || 'Sin diagnóstico',
-          tecnico: document.getElementById('tecnico').value,
-          total: total,
-          abono: abono,
-          resta: Math.max(0, total - abono),
-          estado: 'En Revision'
-        };
-
-        ordenes.unshift(nuevaOrden);
-        contadorID++;
-
-        localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
-        localStorage.setItem('celupro_contador', contadorID.toString());
-
-        renderizarTodo();
-
-        document.getElementById('cliente').value = '';
-        document.getElementById('telefono').value = '';
-        document.getElementById('equipo').value = '';
-        document.getElementById('falla').value = '';
-        montoTotalInput.value = '0';
-        montoAbonoInput.value = '0';
-        document.getElementById('montoResta').value = '0';
-
-        formCard.style.display = 'none';
-      });
-
-      function cargarDatos() {
-        const ords = localStorage.getItem('celupro_ordenes');
-        const cnt = localStorage.getItem('celupro_contador');
-        if (ords) ordenes = JSON.parse(ords);
-        if (cnt) contadorID = parseInt(cnt);
-      }
-
-      function renderizarTodo() {
-        const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
-        const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
-        const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
-        const porCobrar = ordenes.reduce((acc, o) => acc + (o.resta || 0), 0);
-
-        document.getElementById('cardOrdenesActivas').textContent = activas;
-        document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
-        document.getElementById('cardIngresosMes').textContent = $${ingresosTotal.toFixed(2)};
-        document.getElementById('cardClientes').textContent = clientesUnicos;
-        document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
-
-        renderizarTabla(ordenes);
-      }
-
-      function renderizarTabla(lista) {
-        const tbody = document.getElementById('listaOrdenes');
-        tbody.innerHTML = '';
-
-        if (lista.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No hay órdenes registradas aún.</td></tr>';
-          return;
-        }
-
-        lista.forEach((ord, index) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td style="color:#2563eb; font-weight:bold;">${ord.id}</td>
-            <td><b>${ord.cliente}</b></td>
-            <td>${ord.equipo}</td>
-            <td><span class="badge">${ord.estado}</span></td>
-            <td>${ord.tecnico}</td>
-            <td><b>$${ord.total}</b></td>
-            <td style="text-align:center;">
-              <button class="btn-danger" data-idx="${index}">Eliminar</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        document.querySelectorAll('.btn-danger').forEach(btn => {
-          btn.addEventListener('click', function() {
-            const idx = this.getAttribute('data-idx');
-            if (confirm('¿Eliminar esta orden?')) {
-              ordenes.splice(idx, 1);
-              localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
-              renderizarTodo();
-            }
-          });
-        });
-      }
-
-      buscarInput.addEventListener('input', function() {
-        const q = buscarInput.value.toLowerCase();
-        const filtradas = ordenes.filter(o => o.cliente.toLowerCase().includes(q) || o.equipo.toLowerCase().includes(q) || o.id.toLowerCase().includes(q));
-        renderizarTabla(filtradas);
-      });
-
-      cargarDatos();
       renderizarTodo();
-    });
+
+      document.getElementById('cliente').value = '';
+      document.getElementById('telefono').value = '';
+      document.getElementById('equipo').value = '';
+      document.getElementById('falla').value = '';
+      document.getElementById('montoTotal').value = '0';
+      document.getElementById('montoAbono').value = '0';
+      document.getElementById('montoResta').value = '0';
+
+      cerrarFormulario();
+    }
+
+    function renderizarTodo() {
+      var activas = ordenes.filter(function(o) { return o.estado !== 'Entregado'; }).length;
+      var ingresosTotal = ordenes.reduce(function(acc, o) { return acc + (o.abono || 0); }, 0);
+      var clientesUnicos = new Set(ordenes.map(function(o) { return o.cliente.toLowerCase(); })).size;
+      var porCobrar = ordenes.reduce(function(acc, o) { return acc + (o.resta || 0); }, 0);
+
+      document.getElementById('cardOrdenesActivas').textContent = activas;
+      document.getElementById('cardTotalOrdenes').textContent = ordenes.length + ' total';
+      document.getElementById('cardIngresosMes').textContent = '$' + ingresosTotal.toFixed(2);
+      document.getElementById('cardClientes').textContent = clientesUnicos;
+      document.getElementById('cardPorCobrar').textContent = '$' + porCobrar.toFixed(2);
+
+      renderizarTabla(ordenes);
+    }
+
+    function renderizarTabla(lista) {
+      var tbody = document.getElementById('listaOrdenes');
+      tbody.innerHTML = '';
+
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No hay órdenes registradas aún.</td></tr>';
+        return;
+      }
+
+      for (var i = 0; i < lista.length; i++) {
+        var ord = lista[i];
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><b>' + ord.id + '</b></td>' +
+                       '<td><b>' + ord.cliente + '</b></td>' +
+                       '<td>' + ord.equipo + '</td>' +
+                       '<td><span class="badge">' + ord.estado + '</span></td>' +
+                       '<td>' + ord.tecnico + '</td>' +
+                       '<td><b>$' + ord.total + '</b></td>' +
+                       '<td style="text-align:center;"><button class="btn-danger" onclick="eliminarOrden(' + i + ')">Eliminar</button></td>';
+        tbody.appendChild(tr);
+      }
+    }
+
+    function eliminarOrden(index) {
+      if (confirm('¿Eliminar esta orden?')) {
+        ordenes.splice(index, 1);
+        localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+        renderizarTodo();
+      }
+    }
+
+    function filtrarOrdenes() {
+      var q = document.getElementById('buscar').value.toLowerCase();
+      var filtradas = ordenes.filter(function(o) {
+        return o.cliente.toLowerCase().indexOf(q) !== -1 || 
+               o.equipo.toLowerCase().indexOf(q) !== -1 || 
+               o.id.toLowerCase().indexOf(q) !== -1;
+      });
+      renderizarTabla(filtradas);
+    }
+
+    window.onload = function() {
+      var ords = localStorage.getItem('celupro_ordenes');
+      var cnt = localStorage.getItem('celupro_contador');
+      if (ords) ordenes = JSON.parse(ords);
+      if (cnt) contadorID = parseInt(cnt);
+      renderizarTodo();
+    };
   </script>
 </body>
 </html>
