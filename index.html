@@ -4,197 +4,219 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Celupro - Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100 text-slate-800 min-h-screen font-sans">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #f1f5f9; color: #334155; padding-bottom: 30px; }
+    
+    /* Header */
+    header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+    .logo-container { display: flex; items-center; gap: 12px; }
+    .logo-box { width: 40px; height: 40px; background: #000; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; }
+    .title-box h1 { font-size: 18px; color: #0f172a; }
+    .title-box p { font-size: 12px; color: #64748b; }
+    
+    .reloj-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 16px; border-radius: 10px; text-align: center; }
+    #fecha-colombia { font-size: 12px; font-weight: bold; color: #334155; }
+    #reloj-colombia { font-size: 15px; font-weight: 800; color: #2563eb; font-family: monospace; }
+    
+    .btn-principal { background: #2563eb; color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 13px; }
+    .btn-principal:hover { background: #1d4ed8; }
 
-  <!-- HEADER SUPERIOR -->
-  <header class="bg-white border-b border-slate-200 px-4 sm:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-    <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
-      <div class="flex items-center gap-3">
-        <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-10 h-10 object-contain rounded-lg bg-black p-1 border border-slate-700">
-        <div>
-          <h1 class="text-xl font-bold text-slate-900 tracking-wide">CELUPRO</h1>
-          <p class="text-xs text-slate-500 font-medium">Sistema de Gestión</p>
-        </div>
+    /* Layout Principal */
+    main { max-width: 1200px; margin: 24px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 24px; }
+    
+    /* Tarjetas */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .card p { font-size: 12px; color: #64748b; }
+    .card h3 { font-size: 22px; color: #0f172a; margin: 4px 0; }
+    .card span { font-size: 11px; color: #94a3b8; }
+    .card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #eff6ff; }
+
+    /* Tabla */
+    .table-container { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; }
+    .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .search-input { border: 1px solid #e2e8f0; background: #f8fafc; padding: 8px 12px; border-radius: 8px; font-size: 12px; width: 240px; }
+    
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    th { background: #f8fafc; color: #64748b; padding: 10px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; }
+    td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
+    
+    /* Modal */
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
+    .modal-content { background: #fff; border-radius: 16px; width: 100%; max-width: 480px; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+    .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #94a3b8; }
+    
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 11px; color: #64748b; font-weight: 600; }
+    .form-group input, .form-group select, .form-group textarea { border: 1px solid #cbd5e1; background: #f8fafc; padding: 8px; border-radius: 8px; font-size: 12px; width: 100%; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    
+    .btn-danger { background: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-box">CP</div>
+      <div class="title-box">
+        <h1>CELUPRO</h1>
+        <p>Sistema de Gestión</p>
       </div>
     </div>
 
-    <!-- FECHA Y HORA EN TIEMPO REAL -->
-    <div class="w-full md:w-auto text-center bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl shadow-sm leading-tight">
-      <div id="fecha-colombia" class="text-xs sm:text-sm font-bold text-slate-700">Cargando fecha...</div>
-      <div id="reloj-colombia" class="text-sm sm:text-base font-extrabold text-blue-600 font-mono">--:--:--</div>
+    <div class="reloj-box">
+      <div id="fecha-colombia">Cargando...</div>
+      <div id="reloj-colombia">00:00:00</div>
     </div>
 
-    <!-- BOTÓN CREAR ORDEN -->
-    <div class="w-full md:w-auto">
-      <button onclick="abrirModal()" type="button" class="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-5 py-2.5 rounded-xl shadow-md transition-colors cursor-pointer">
-        + Crear Nueva Orden
-      </button>
-    </div>
+    <button type="button" class="btn-principal" onclick="abrirModal()">+ Crear Nueva Orden</button>
   </header>
 
-  <main class="p-4 sm:p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
-
-    <!-- TARJETAS DE MÉTRICAS -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+  <!-- MAIN CONTAINER -->
+  <main>
+    <div class="cards-grid">
+      <div class="card">
         <div>
-          <p class="text-xs text-slate-500 font-medium">Órdenes activas</p>
-          <h3 id="cardOrdenesActivas" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
-          <span id="cardTotalOrdenes" class="text-[11px] text-slate-400">0 total</span>
+          <p>Órdenes activas</p>
+          <h3 id="cardOrdenesActivas">0</h3>
+          <span id="cardTotalOrdenes">0 total</span>
         </div>
-        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold">📋</div>
+        <div class="card-icon">📋</div>
       </div>
-
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+      <div class="card">
         <div>
-          <p class="text-xs text-slate-500 font-medium">Ingresos del mes</p>
-          <h3 id="cardIngresosMes" class="text-2xl font-bold text-slate-900 mt-1">$0.00</h3>
-          <span id="cardIngresosTotal" class="text-[11px] text-emerald-600 font-medium">$0.00 histórico</span>
+          <p>Ingresos del mes</p>
+          <h3 id="cardIngresosMes">$0.00</h3>
+          <span id="cardIngresosTotal">$0.00 histórico</span>
         </div>
-        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">💲</div>
+        <div class="card-icon">💲</div>
       </div>
-
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+      <div class="card">
         <div>
-          <p class="text-xs text-slate-500 font-medium">Clientes</p>
-          <h3 id="cardClientes" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
-          <span id="cardClientesMes" class="text-[11px] text-slate-400">0 este mes</span>
+          <p>Clientes</p>
+          <h3 id="cardClientes">0</h3>
+          <span id="cardClientesMes">0 este mes</span>
         </div>
-        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg font-bold">👥</div>
+        <div class="card-icon">👥</div>
       </div>
-
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+      <div class="card">
         <div>
-          <p class="text-xs text-slate-500 font-medium">Transacciones (Por Cobrar)</p>
-          <h3 id="cardPorCobrar" class="text-2xl font-bold text-rose-600 mt-1">$0.00</h3>
-          <span id="cardCantTrans" class="text-[11px] text-slate-400">0 pendientes</span>
+          <p>Por Cobrar</p>
+          <h3 id="cardPorCobrar" style="color:#e11d48;">$0.00</h3>
+          <span id="cardCantTrans">0 pendientes</span>
         </div>
-        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg font-bold">💳</div>
+        <div class="card-icon">💳</div>
       </div>
     </div>
 
-    <!-- TABLA DE ÓRDENES -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h3 class="text-base font-bold text-slate-900">Órdenes recientes</h3>
-        <input type="text" id="buscar" oninput="filtrarOrdenes()" placeholder="Buscar cliente, equipo o ID..." class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 w-full sm:w-64">
+    <div class="table-container">
+      <div class="table-header">
+        <h3>Órdenes recientes</h3>
+        <input type="text" id="buscar" class="search-input" oninput="filtrarOrdenes()" placeholder="Buscar cliente, equipo o ID...">
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-50 text-slate-400 uppercase font-semibold border-b border-slate-100">
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
             <tr>
-              <th class="py-3 px-3">ORDEN</th>
-              <th class="py-3 px-3">CLIENTE</th>
-              <th class="py-3 px-3">EQUIPO</th>
-              <th class="py-3 px-3">ESTADO</th>
-              <th class="py-3 px-3">TÉCNICO</th>
-              <th class="py-3 px-3">COSTO</th>
-              <th class="py-3 px-3 text-center">ACCIONES</th>
+              <th>ORDEN</th>
+              <th>CLIENTE</th>
+              <th>EQUIPO</th>
+              <th>ESTADO</th>
+              <th>TÉCNICO</th>
+              <th>COSTO</th>
+              <th style="text-align:center;">ACCIONES</th>
             </tr>
           </thead>
-          <tbody id="listaOrdenes" class="divide-y divide-slate-100"></tbody>
+          <tbody id="listaOrdenes"></tbody>
         </table>
       </div>
     </div>
   </main>
 
   <!-- MODAL NUEVA ORDEN -->
-  <div id="modalOrden" style="display: none;" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 text-slate-800">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-        <h3 class="text-base font-bold text-slate-900">Crear Nueva Orden de Reparación</h3>
-        <button onclick="cerrarModal()" type="button" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">&times;</button>
+  <div id="modalOrden" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Crear Nueva Orden</h3>
+        <button type="button" class="close-btn" onclick="cerrarModal()">&times;</button>
       </div>
 
-      <div class="space-y-3">
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">Nombre del Cliente</label>
-          <input type="text" id="cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
-        </div>
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">Teléfono</label>
-          <input type="text" id="telefono" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
-        </div>
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">Equipo / Modelo</label>
-          <input type="text" id="equipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
-        </div>
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">Técnico Asignado</label>
-          <select id="tecnico" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
-            <option value="Robert">Robert</option>
-            <option value="Técnico 2">Técnico 2</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">Falla / Diagnóstico Inicial</label>
-          <textarea id="falla" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500"></textarea>
-        </div>
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="block text-xs text-slate-500 mb-1">Total ($)</label>
-            <input type="number" id="montoTotal" value="0" onkeyup="calcularSaldo()" onchange="calcularSaldo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-500 mb-1">Abono ($)</label>
-            <input type="number" id="montoAbono" value="0" onkeyup="calcularSaldo()" onchange="calcularSaldo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-500 mb-1">Resta ($)</label>
-            <input type="number" id="montoResta" value="0" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-2 py-2 text-xs text-rose-600 font-bold focus:outline-none">
-          </div>
-        </div>
-
-        <button onclick="guardarOrden()" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-xl transition-colors mt-2 shadow-md cursor-pointer">
-          Guardar Orden
-        </button>
+      <div class="form-group">
+        <label>Nombre del Cliente</label>
+        <input type="text" id="cliente" placeholder="Ej: Eugenio">
       </div>
+
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input type="text" id="telefono" placeholder="Ej: 300123456">
+      </div>
+
+      <div class="form-group">
+        <label>Equipo / Modelo</label>
+        <input type="text" id="equipo" placeholder="Ej: iPhone 15">
+      </div>
+
+      <div class="form-group">
+        <label>Técnico Asignado</label>
+        <select id="tecnico">
+          <option value="Robert">Robert</option>
+          <option value="Técnico 2">Técnico 2</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Falla / Diagnóstico Inicial</label>
+        <textarea id="falla" rows="2" placeholder="Describa la falla..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Total ($)</label>
+          <input type="number" id="montoTotal" value="0" oninput="calcularSaldo()">
+        </div>
+        <div class="form-group">
+          <label>Abono ($)</label>
+          <input type="number" id="montoAbono" value="0" oninput="calcularSaldo()">
+        </div>
+        <div class="form-group">
+          <label>Resta ($)</label>
+          <input type="number" id="montoResta" value="0" readonly style="color:#e11d48; font-weight:bold;">
+        </div>
+      </div>
+
+      <button type="button" class="btn-principal" style="width:100%; margin-top:10px;" onclick="guardarOrden()">Guardar Orden</button>
     </div>
   </div>
 
   <script>
-    // LÓGICA DEL RELOJ EN TIEMPO REAL
-    function mostrarHoraColombia() {
-      try {
-        const d = new Date();
-        const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-        const fechaCO = new Date(utc + (3600000 * -5));
+    // RELOJ DIRECTO (Sin dependencias externas)
+    function actualizarReloj() {
+      const ahora = new Date();
+      const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-        const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const fechaStr = ${dias[ahora.getDay()]}, ${ahora.getDate()} de ${meses[ahora.getMonth()]} de ${ahora.getFullYear()};
+      
+      let hrs = ahora.getHours();
+      const ampm = hrs >= 12 ? 'PM' : 'AM';
+      hrs = hrs % 12 || 12;
+      const min = String(ahora.getMinutes()).padStart(2, '0');
+      const sec = String(ahora.getSeconds()).padStart(2, '0');
+      const horaStr = ${hrs}:${min}:${sec} ${ampm};
 
-        const nombreDia = dias[fechaCO.getDay()];
-        const diaNum = fechaCO.getDate();
-        const nombreMes = meses[fechaCO.getMonth()];
-        const anio = fechaCO.getFullYear();
-
-        let horas = fechaCO.getHours();
-        let minutos = fechaCO.getMinutes();
-        let segundos = fechaCO.getSeconds();
-        const ampm = horas >= 12 ? 'PM' : 'AM';
-
-        horas = horas % 12;
-        horas = horas ? horas : 12; 
-        minutos = minutos < 10 ? '0' + minutos : minutos;
-        segundos = segundos < 10 ? '0' + segundos : segundos;
-
-        const elFecha = document.getElementById('fecha-colombia');
-        const elReloj = document.getElementById('reloj-colombia');
-
-        if (elFecha) elFecha.innerText = nombreDia + ", " + diaNum + " de " + nombreMes + " de " + anio;
-        if (elReloj) elReloj.innerText = horas + ":" + minutos + ":" + segundos + " " + ampm;
-      } catch (err) {
-        console.log(err);
-      }
+      document.getElementById('fecha-colombia').textContent = fechaStr;
+      document.getElementById('reloj-colombia').textContent = horaStr;
     }
+    
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
 
-    mostrarHoraColombia();
-    setInterval(mostrarHoraColombia, 1000);
-
-    // LÓGICA DEL DASHBOARD
+    // MODAL Y LÓGICA DE ÓRDENES
     let ordenes = [];
     let contadorID = 101;
 
@@ -209,8 +231,7 @@
     function calcularSaldo() {
       const total = parseFloat(document.getElementById('montoTotal').value) || 0;
       const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
-      const resta = total - abono;
-      document.getElementById('montoResta').value = resta < 0 ? 0 : resta;
+      document.getElementById('montoResta').value = Math.max(0, total - abono);
     }
 
     function guardarOrden() {
@@ -218,13 +239,13 @@
       const equipoVal = document.getElementById('equipo').value.trim();
 
       if (!clienteVal || !equipoVal) {
-        alert('Por favor, ingresa el nombre del Cliente y el Equipo.');
+        alert('Ingresa el nombre del Cliente y el Equipo.');
         return;
       }
 
       const total = parseFloat(document.getElementById('montoTotal').value) || 0;
       const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
-      const resta = parseFloat(document.getElementById('montoResta').value) || 0;
+      const resta = Math.max(0, total - abono);
 
       const nuevaOrden = {
         id: '#ORD-' + contadorID,
@@ -243,10 +264,13 @@
       ordenes.unshift(nuevaOrden);
       contadorID++;
 
-      guardarDatos();
+      // Guardar y renderizar
+      localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+      localStorage.setItem('celupro_contador', contadorID.toString());
+
       renderizarTodo();
 
-      // Limpieza de campos
+      // Resetear campos
       document.getElementById('cliente').value = '';
       document.getElementById('telefono').value = '';
       document.getElementById('equipo').value = '';
@@ -256,11 +280,6 @@
       document.getElementById('montoResta').value = '0';
 
       cerrarModal();
-    }
-
-    function guardarDatos() {
-      localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
-      localStorage.setItem('celupro_contador', contadorID.toString());
     }
 
     function cargarDatos() {
@@ -276,32 +295,16 @@
     }
 
     function renderizarTarjetas() {
-      const mesActual = new Date().getMonth();
-      const anoActual = new Date().getFullYear();
-
       const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
-      
-      const ordenesMes = ordenes.filter(o => {
-        const f = o.fecha ? new Date(o.fecha) : new Date();
-        return f.getMonth() === mesActual && f.getFullYear() === anoActual;
-      });
-      const ingresosMes = ordenesMes.reduce((acc, o) => acc + (o.abono || 0), 0);
       const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
-
       const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
-      const clientesMes = new Set(ordenesMes.map(o => o.cliente.toLowerCase())).size;
-
-      const pendientes = ordenes.filter(o => o.resta > 0);
-      const porCobrar = pendientes.reduce((acc, o) => acc + (o.resta || 0), 0);
+      const porCobrar = ordenes.reduce((acc, o) => acc + (o.resta || 0), 0);
 
       document.getElementById('cardOrdenesActivas').textContent = activas;
       document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
-      document.getElementById('cardIngresosMes').textContent = $${ingresosMes.toFixed(2)};
-      document.getElementById('cardIngresosTotal').textContent = $${ingresosTotal.toFixed(2)} histórico;
+      document.getElementById('cardIngresosMes').textContent = $${ingresosTotal.toFixed(2)};
       document.getElementById('cardClientes').textContent = clientesUnicos;
-      document.getElementById('cardClientesMes').textContent = ${clientesMes} este mes;
       document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
-      document.getElementById('cardCantTrans').textContent = ${pendientes.length} pendientes;
     }
 
     function renderizarOrdenes(lista) {
@@ -309,38 +312,28 @@
       tbody.innerHTML = '';
 
       if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400">No hay órdenes registradas aún.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No hay órdenes registradas aún.</td></tr>';
         return;
       }
 
-      lista.forEach(function(ord, index) {
-        const colorBadge = {
-          'En Revision': 'bg-amber-50 text-amber-700 border-amber-200',
-          'En Reparacion': 'bg-blue-50 text-blue-700 border-blue-200',
-          'Listo': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-          'Entregado': 'bg-slate-100 text-slate-700 border-slate-300'
-        }[ord.estado] || 'bg-slate-100 text-slate-700 border-slate-300';
-
+      lista.forEach((ord, index) => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50 transition-colors';
         tr.innerHTML = `
-          <td class="py-3.5 px-3 font-mono text-xs text-blue-600 font-bold">${ord.id}</td>
-          <td class="py-3.5 px-3 font-medium text-slate-800">${ord.cliente}</td>
-          <td class="py-3.5 px-3 text-slate-600">${ord.equipo}</td>
-          <td class="py-3.5 px-3">
-            <select onchange="cambiarEstado(${index}, this.value)" class="text-xs rounded-full px-2 py-1 font-semibold border ${colorBadge} bg-white cursor-pointer focus:outline-none">
+          <td style="color:#2563eb; font-weight:bold;">${ord.id}</td>
+          <td><b>${ord.cliente}</b></td>
+          <td>${ord.equipo}</td>
+          <td>
+            <select onchange="cambiarEstado(${index}, this.value)">
               <option value="En Revision" ${ord.estado === 'En Revision' ? 'selected' : ''}>En Revision</option>
               <option value="En Reparacion" ${ord.estado === 'En Reparacion' ? 'selected' : ''}>En Reparacion</option>
               <option value="Listo" ${ord.estado === 'Listo' ? 'selected' : ''}>Listo</option>
               <option value="Entregado" ${ord.estado === 'Entregado' ? 'selected' : ''}>Entregado</option>
             </select>
           </td>
-          <td class="py-3.5 px-3 text-slate-600">${ord.tecnico}</td>
-          <td class="py-3.5 px-3 font-semibold text-slate-900">$${ord.total}</td>
-          <td class="py-3.5 px-3 text-center">
-            <button onclick="borrarOrden(${index})" class="px-2 py-1 bg-rose-50 text-rose-600 border border-rose-200 text-xs rounded-lg hover:bg-rose-100 cursor-pointer">
-              Eliminar
-            </button>
+          <td>${ord.tecnico}</td>
+          <td><b>$${ord.total}</b></td>
+          <td style="text-align:center;">
+            <button class="btn-danger" onclick="borrarOrden(${index})">Eliminar</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -349,26 +342,22 @@
 
     function cambiarEstado(index, nuevoEstado) {
       ordenes[index].estado = nuevoEstado;
-      guardarDatos();
+      localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
       renderizarTodo();
     }
 
     function borrarOrden(index) {
-      if (confirm('¿Seguro que deseas eliminar esta orden?')) {
+      if (confirm('¿Deseas borrar esta orden?')) {
         ordenes.splice(index, 1);
-        guardarDatos();
+        localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
         renderizarTodo();
       }
     }
 
     function filtrarOrdenes() {
-      const texto = document.getElementById('buscar').value.toLowerCase();
-      const filtradas = ordenes.filter(function(o) {
-        return o.cliente.toLowerCase().includes(texto) ||
-               o.equipo.toLowerCase().includes(texto) ||
-               o.id.toLowerCase().includes(texto);
-      });
-      renderizarOrdenes(filtradas);
+      const q = document.getElementById('buscar').value.toLowerCase();
+      const res = ordenes.filter(o => o.cliente.toLowerCase().includes(q) || o.equipo.toLowerCase().includes(q) || o.id.toLowerCase().includes(q));
+      renderizarOrdenes(res);
     }
 
     cargarDatos();
