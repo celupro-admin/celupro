@@ -8,20 +8,17 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: #f1f5f9; color: #334155; padding-bottom: 30px; }
     
-    /* Header */
     header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .logo-container { display: flex; align-items: center; gap: 12px; }
     .logo-box { width: 40px; height: 40px; background: #000; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; }
     .title-box h1 { font-size: 18px; color: #0f172a; line-height: 1.2; }
     .title-box p { font-size: 12px; color: #64748b; }
     
-    .btn-principal { background: #2563eb; color: #fff; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 14px; width: 100%; max-width: 250px; text-align: center; }
-    .btn-principal:active { background: #1d4ed8; }
+    .btn-principal { background: #2563eb; color: #fff; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 14px; text-align: center; }
+    .btn-principal:hover { background: #1d4ed8; }
 
-    /* Layout Principal */
     main { max-width: 1200px; margin: 20px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 20px; }
     
-    /* Tarjetas */
     .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
     .card { background: #fff; border: 1px solid #e2e8f0; padding: 16px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; }
     .card p { font-size: 12px; color: #64748b; font-weight: 500; }
@@ -29,7 +26,6 @@
     .card span { font-size: 11px; color: #94a3b8; }
     .card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #f8fafc; }
 
-    /* Tabla */
     .table-container { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; }
     .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
     .search-input { border: 1px solid #cbd5e1; background: #f8fafc; padding: 10px 12px; border-radius: 10px; font-size: 13px; width: 100%; max-width: 300px; }
@@ -38,17 +34,16 @@
     th { background: #f8fafc; color: #64748b; padding: 10px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
     td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
     
-    /* Modal Ventana emergente */
-    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(3px); justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
-    .modal-content { background: #fff; border-radius: 16px; width: 100%; max-width: 480px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    /* MODAL CON Z-INDEX ELEVADO */
+    .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); z-index: 99999; justify-content: center; align-items: center; padding: 16px; }
+    .modal-content { background: #fff; border-radius: 16px; width: 100%; max-width: 480px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
     .modal-header h3 { font-size: 16px; color: #0f172a; }
-    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8; line-height: 1; }
+    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8; }
     
     .form-group { display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 11px; color: #64748b; font-weight: 600; }
     .form-group input, .form-group select, .form-group textarea { border: 1px solid #cbd5e1; background: #f8fafc; padding: 10px; border-radius: 8px; font-size: 13px; width: 100%; outline: none; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #2563eb; background: #fff; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
     
     .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #f1f5f9; color: #475569; display: inline-block; }
@@ -57,7 +52,6 @@
 </head>
 <body>
 
-  <!-- HEADER SIN FECHA NI RELOJ -->
   <header>
     <div class="logo-container">
       <div class="logo-box">CP</div>
@@ -70,7 +64,6 @@
     <button type="button" class="btn-principal" id="btnAbrirModal">+ Crear Nueva Orden</button>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main>
     <div class="cards-grid">
       <div class="card">
@@ -132,7 +125,6 @@
     </div>
   </main>
 
-  <!-- MODAL DE NUEVA ORDEN -->
   <div id="modalOrden" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
@@ -183,159 +175,153 @@
         </div>
       </div>
 
-      <button type="button" class="btn-principal" id="btnGuardarOrden" style="width:100%; max-width:100%; margin-top:10px;">Guardar Orden</button>
+      <button type="button" class="btn-principal" id="btnGuardarOrden" style="width:100%; margin-top:10px;">Guardar Orden</button>
     </div>
   </div>
 
   <script>
-    // SISTEMA PRINCIPAL SIMPLIFICADO
-    let ordenes = [];
-    let contadorID = 101;
+    document.addEventListener("DOMContentLoaded", function() {
+      let ordenes = [];
+      let contadorID = 101;
 
-    // Elementos del DOM
-    const modal = document.getElementById('modalOrden');
-    const btnAbrirModal = document.getElementById('btnAbrirModal');
-    const btnCerrarModal = document.getElementById('btnCerrarModal');
-    const btnGuardarOrden = document.getElementById('btnGuardarOrden');
-    const montoTotalInput = document.getElementById('montoTotal');
-    const montoAbonoInput = document.getElementById('montoAbono');
-    const buscarInput = document.getElementById('buscar');
+      const modal = document.getElementById('modalOrden');
+      const btnAbrirModal = document.getElementById('btnAbrirModal');
+      const btnCerrarModal = document.getElementById('btnCerrarModal');
+      const btnGuardarOrden = document.getElementById('btnGuardarOrden');
+      const montoTotalInput = document.getElementById('montoTotal');
+      const montoAbonoInput = document.getElementById('montoAbono');
+      const buscarInput = document.getElementById('buscar');
 
-    // Funciones del Modal
-    btnAbrirModal.onclick = function() {
-      modal.style.display = 'flex';
-    };
-
-    btnCerrarModal.onclick = function() {
-      modal.style.display = 'none';
-    };
-
-    // Cálculo automático de Resta
-    function calcularResta() {
-      const total = parseFloat(montoTotalInput.value) || 0;
-      const abono = parseFloat(montoAbonoInput.value) || 0;
-      const resta = total - abono;
-      document.getElementById('montoResta').value = resta > 0 ? resta : 0;
-    }
-
-    montoTotalInput.oninput = calcularResta;
-    montoAbonoInput.oninput = calcularResta;
-
-    // Guardar Orden
-    btnGuardarOrden.onclick = function() {
-      const clienteVal = document.getElementById('cliente').value.trim();
-      const equipoVal = document.getElementById('equipo').value.trim();
-
-      if (!clienteVal || !equipoVal) {
-        alert('Ingresa al menos el Nombre del Cliente y el Equipo.');
-        return;
-      }
-
-      const total = parseFloat(montoTotalInput.value) || 0;
-      const abono = parseFloat(montoAbonoInput.value) || 0;
-      const resta = Math.max(0, total - abono);
-
-      const nuevaOrden = {
-        id: '#ORD-' + contadorID,
-        cliente: clienteVal,
-        telefono: document.getElementById('telefono').value.trim() || 'N/A',
-        equipo: equipoVal,
-        falla: document.getElementById('falla').value.trim() || 'Sin diagnóstico',
-        tecnico: document.getElementById('tecnico').value,
-        total: total,
-        abono: abono,
-        resta: resta,
-        estado: 'En Revision'
-      };
-
-      ordenes.unshift(nuevaOrden);
-      contadorID++;
-
-      // Guardar en almacenamiento local
-      localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
-      localStorage.setItem('celupro_contador', contadorID.toString());
-
-      renderizarTodo();
-
-      // Limpiar formulario
-      document.getElementById('cliente').value = '';
-      document.getElementById('telefono').value = '';
-      document.getElementById('equipo').value = '';
-      document.getElementById('falla').value = '';
-      montoTotalInput.value = '0';
-      montoAbonoInput.value = '0';
-      document.getElementById('montoResta').value = '0';
-
-      modal.style.display = 'none';
-    };
-
-    // Cargar Datos
-    function cargarDatos() {
-      const ords = localStorage.getItem('celupro_ordenes');
-      const cnt = localStorage.getItem('celupro_contador');
-      if (ords) ordenes = JSON.parse(ords);
-      if (cnt) contadorID = parseInt(cnt);
-    }
-
-    // Renderizar Métricas y Tabla
-    function renderizarTodo() {
-      const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
-      const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
-      const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
-      const porCobrar = ordenes.reduce((acc, o) => acc + (o.resta || 0), 0);
-
-      document.getElementById('cardOrdenesActivas').textContent = activas;
-      document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
-      document.getElementById('cardIngresosMes').textContent = $${ingresosTotal.toFixed(2)};
-      document.getElementById('cardClientes').textContent = clientesUnicos;
-      document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
-
-      renderizarOrdenes(ordenes);
-    }
-
-    function renderizarOrdenes(lista) {
-      const tbody = document.getElementById('listaOrdenes');
-      tbody.innerHTML = '';
-
-      if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No hay órdenes registradas aún.</td></tr>';
-        return;
-      }
-
-      lista.forEach((ord, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="color:#2563eb; font-weight:bold;">${ord.id}</td>
-          <td><b>${ord.cliente}</b></td>
-          <td>${ord.equipo}</td>
-          <td><span class="badge">${ord.estado}</span></td>
-          <td>${ord.tecnico}</td>
-          <td><b>$${ord.total}</b></td>
-          <td style="text-align:center;">
-            <button class="btn-danger" onclick="borrarOrden(${index})">Eliminar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
+      btnAbrirModal.addEventListener('click', function() {
+        modal.style.display = 'flex';
       });
-    }
 
-    window.borrarOrden = function(index) {
-      if (confirm('¿Eliminar esta orden?')) {
-        ordenes.splice(index, 1);
-        localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
-        renderizarTodo();
+      btnCerrarModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+      });
+
+      function calcularResta() {
+        const total = parseFloat(montoTotalInput.value) || 0;
+        const abono = parseFloat(montoAbonoInput.value) || 0;
+        const resta = total - abono;
+        document.getElementById('montoResta').value = resta > 0 ? resta : 0;
       }
-    };
 
-    buscarInput.oninput = function() {
-      const q = buscarInput.value.toLowerCase();
-      const filtradas = ordenes.filter(o => o.cliente.toLowerCase().includes(q) || o.equipo.toLowerCase().includes(q) || o.id.toLowerCase().includes(q));
-      renderizarOrdenes(filtradas);
-    };
+      montoTotalInput.addEventListener('input', calcularResta);
+      montoAbonoInput.addEventListener('input', calcularResta);
 
-    // Inicializar
-    cargarDatos();
-    renderizarTodo();
+      btnGuardarOrden.addEventListener('click', function() {
+        const clienteVal = document.getElementById('cliente').value.trim();
+        const equipoVal = document.getElementById('equipo').value.trim();
+
+        if (!clienteVal || !equipoVal) {
+          alert('Ingresa el Nombre del Cliente y el Equipo.');
+          return;
+        }
+
+        const total = parseFloat(montoTotalInput.value) || 0;
+        const abono = parseFloat(montoAbonoInput.value) || 0;
+
+        const nuevaOrden = {
+          id: '#ORD-' + contadorID,
+          cliente: clienteVal,
+          telefono: document.getElementById('telefono').value.trim() || 'N/A',
+          equipo: equipoVal,
+          falla: document.getElementById('falla').value.trim() || 'Sin diagnóstico',
+          tecnico: document.getElementById('tecnico').value,
+          total: total,
+          abono: abono,
+          resta: Math.max(0, total - abono),
+          estado: 'En Revision'
+        };
+
+        ordenes.unshift(nuevaOrden);
+        contadorID++;
+
+        localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+        localStorage.setItem('celupro_contador', contadorID.toString());
+
+        renderizarTodo();
+
+        document.getElementById('cliente').value = '';
+        document.getElementById('telefono').value = '';
+        document.getElementById('equipo').value = '';
+        document.getElementById('falla').value = '';
+        montoTotalInput.value = '0';
+        montoAbonoInput.value = '0';
+        document.getElementById('montoResta').value = '0';
+
+        modal.style.display = 'none';
+      });
+
+      function cargarDatos() {
+        const ords = localStorage.getItem('celupro_ordenes');
+        const cnt = localStorage.getItem('celupro_contador');
+        if (ords) ordenes = JSON.parse(ords);
+        if (cnt) contadorID = parseInt(cnt);
+      }
+
+      function renderizarTodo() {
+        const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
+        const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
+        const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
+        const porCobrar = ordenes.reduce((acc, o) => acc + (o.resta || 0), 0);
+
+        document.getElementById('cardOrdenesActivas').textContent = activas;
+        document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
+        document.getElementById('cardIngresosMes').textContent = $${ingresosTotal.toFixed(2)};
+        document.getElementById('cardClientes').textContent = clientesUnicos;
+        document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
+
+        renderizarOrdenes(ordenes);
+      }
+
+      function renderizarOrdenes(lista) {
+        const tbody = document.getElementById('listaOrdenes');
+        tbody.innerHTML = '';
+
+        if (lista.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No hay órdenes registradas aún.</td></tr>';
+          return;
+        }
+
+        lista.forEach((ord, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="color:#2563eb; font-weight:bold;">${ord.id}</td>
+            <td><b>${ord.cliente}</b></td>
+            <td>${ord.equipo}</td>
+            <td><span class="badge">${ord.estado}</span></td>
+            <td>${ord.tecnico}</td>
+            <td><b>$${ord.total}</b></td>
+            <td style="text-align:center;">
+              <button class="btn-danger" data-idx="${index}">Eliminar</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.btn-danger').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const idx = this.getAttribute('data-idx');
+            if (confirm('¿Eliminar esta orden?')) {
+              ordenes.splice(idx, 1);
+              localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+              renderizarTodo();
+            }
+          });
+        });
+      }
+
+      buscarInput.addEventListener('input', function() {
+        const q = buscarInput.value.toLowerCase();
+        const filtradas = ordenes.filter(o => o.cliente.toLowerCase().includes(q) || o.equipo.toLowerCase().includes(q) || o.id.toLowerCase().includes(q));
+        renderizarOrdenes(filtradas);
+      });
+
+      cargarDatos();
+      renderizarTodo();
+    });
   </script>
 </body>
 </html>
