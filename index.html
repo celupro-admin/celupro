@@ -276,16 +276,15 @@ if (lista.length === 0) {
         }
    // Forzar el inicio de sesión
 document.addEventListener('DOMContentLoaded', function() {
-  const form = document.querySelector('form');
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const loginModal = document.getElementById('loginModal') || document.querySelector('.modal') || document.querySelector('div[class*="login"]');
-      if (loginModal) {
-        loginModal.style.display = 'none';
-        loginModal.classList.add('hidden');
-      }
-    });
+  const loginScreen = document.getElementById('loginScreen');
+  if (loginScreen) {
+    const btnEntrar = loginScreen.querySelector('button');
+    if (btnEntrar) {
+      btnEntrar.addEventListener('click', function(e) {
+        e.preventDefault();
+        loginScreen.style.display = 'none';
+      });
+    }
   }
 });
     </script>
