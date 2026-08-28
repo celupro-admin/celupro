@@ -8,9 +8,9 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: #f1f5f9; color: #334155; padding-bottom: 30px; }
     
-    header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .logo-container { display: flex; align-items: center; gap: 12px; }
-    .logo-box { width: 40px; height: 40px; background: #000; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; }
+    .logo-img { height: 45px; width: auto; max-width: 160px; object-fit: contain; }
     .title-box h1 { font-size: 18px; color: #0f172a; line-height: 1.2; }
     .title-box p { font-size: 12px; color: #64748b; }
     
@@ -34,7 +34,6 @@
     th { background: #f8fafc; color: #64748b; padding: 10px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
     td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
     
-    /* MODAL CON Z-INDEX ELEVADO */
     .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); z-index: 99999; justify-content: center; align-items: center; padding: 16px; }
     .modal-content { background: #fff; border-radius: 16px; width: 100%; max-width: 480px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
@@ -54,7 +53,7 @@
 
   <header>
     <div class="logo-container">
-      <div class="logo-box">CP</div>
+      <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="CELUPRO Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x45?text=CELUPRO';">
       <div class="title-box">
         <h1>CELUPRO</h1>
         <p>Sistema de Gestión</p>
@@ -151,7 +150,7 @@
         <label>Técnico Asignado</label>
         <select id="tecnico">
           <option value="Robert">Robert</option>
-          <option value="Técnico 2">Técnico 2</option>
+          <option value="Andrés Anzola">Andrés Anzola</option>
         </select>
       </div>
 
@@ -221,6 +220,11 @@
 
         const total = parseFloat(montoTotalInput.value) || 0;
         const abono = parseFloat(montoAbonoInput.value) || 0;
+
+        if (abono > total) {
+          alert('El abono no puede ser mayor al total.');
+          return;
+        }
 
         const nuevaOrden = {
           id: '#ORD-' + contadorID,
