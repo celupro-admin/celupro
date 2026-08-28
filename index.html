@@ -26,7 +26,6 @@
     .card h3 { font-size: 22px; color: #0f172a; margin: 4px 0; font-weight: bold; }
     .card span { font-size: 11px; color: #94a3b8; }
 
-    /* SECCIÓN DE FORMULARIO INTEGRADO */
     .form-card { background: #fff; border: 2px solid #2563eb; border-radius: 16px; padding: 20px; display: none; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1); }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -57,7 +56,7 @@
       </div>
     </div>
 
-    <button type="button" class="btn-principal" onclick="toggleFormulario()">+ Crear Nueva Orden</button>
+    <button type="button" class="btn-principal" id="btnNuevoForm">+ Crear Nueva Orden</button>
   </header>
 
   <main>
@@ -89,7 +88,6 @@
       </div>
     </div>
 
-    <!-- FORMULARIO DIRECTO EN PANTALLA -->
     <div id="seccionFormulario" class="form-card">
       <h3 style="color:#0f172a; font-size:16px;">Registrar Nueva Orden</h3>
       
@@ -124,12 +122,12 @@
 
         <div class="form-group">
           <label>Costo Total ($)</label>
-          <input type="number" id="montoTotal" value="0" oninput="calcularResta()">
+          <input type="number" id="montoTotal" value="0">
         </div>
 
         <div class="form-group">
           <label>Abono ($)</label>
-          <input type="number" id="montoAbono" value="0" oninput="calcularResta()">
+          <input type="number" id="montoAbono" value="0">
         </div>
 
         <div class="form-group">
@@ -139,15 +137,15 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn-secundario" onclick="toggleFormulario()">Cancelar</button>
-        <button type="button" class="btn-principal" onclick="guardarOrdenDirecto()">Guardar Orden</button>
+        <button type="button" class="btn-secundario" id="btnCancelarForm">Cancelar</button>
+        <button type="button" class="btn-principal" id="btnGuardar">Guardar Orden</button>
       </div>
     </div>
 
     <div class="table-container">
       <div class="table-header">
         <h3 style="font-size:16px; color:#0f172a;">Órdenes recientes</h3>
-        <input type="text" id="buscar" class="search-input" placeholder="Buscar cliente, equipo o ID..." oninput="filtrarOrdenes()">
+        <input type="text" id="buscar" class="search-input" placeholder="Buscar cliente, equipo o ID...">
       </div>
 
       <div style="overflow-x: auto;">
@@ -170,137 +168,152 @@
   </main>
 
   <script>
-    let ordenes = [];
-    let contadorID = 101;
+    document.addEventListener("DOMContentLoaded", function() {
+      let ordenes = [];
+      let contadorID = 101;
 
-    function toggleFormulario() {
-      const form = document.getElementById('seccionFormulario');
-      if (form.style.display === 'block') {
-        form.style.display = 'none';
-      } else {
-        form.style.display = 'block';
-        window.scrollTo({ top: 100, behavior: 'smooth' });
-      }
-    }
+      const btnNuevoForm = document.getElementById('btnNuevoForm');
+      const btnCancelarForm = document.getElementById('btnCancelarForm');
+      const btnGuardar = document.getElementById('btnGuardar');
+      const formCard = document.getElementById('seccionFormulario');
+      const montoTotalInput = document.getElementById('montoTotal');
+      const montoAbonoInput = document.getElementById('montoAbono');
+      const buscarInput = document.getElementById('buscar');
 
-    function calcularResta() {
-      const total = parseFloat(document.getElementById('montoTotal').value) || 0;
-      const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
-      const resta = total - abono;
-      document.getElementById('montoResta').value = resta > 0 ? resta : 0;
-    }
-
-    function guardarOrdenDirecto() {
-      const clienteVal = document.getElementById('cliente').value.trim();
-      const equipoVal = document.getElementById('equipo').value.trim();
-
-      if (!clienteVal || !equipoVal) {
-        alert('Por favor completa el Nombre del Cliente y el Equipo.');
-        return;
-      }
-
-      const total = parseFloat(document.getElementById('montoTotal').value) || 0;
-      const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
-
-      const nuevaOrden = {
-        id: '#ORD-' + contadorID,
-        cliente: clienteVal,
-        telefono: document.getElementById('telefono').value.trim() || 'N/A',
-        equipo: equipoVal,
-        falla: document.getElementById('falla').value.trim() || 'Sin diagnóstico',
-        tecnico: document.getElementById('tecnico').value,
-        total: total,
-        abono: abono,
-        resta: Math.max(0, total - abono),
-        estado: 'En Revision'
-      };
-
-      ordenes.unshift(nuevaOrden);
-      contadorID++;
-
-      localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
-      localStorage.setItem('celupro_contador', contadorID.toString());
-
-      renderizarTodo();
-
-      // Limpiar campos
-      document.getElementById('cliente').value = '';
-      document.getElementById('telefono').value = '';
-      document.getElementById('equipo').value = '';
-      document.getElementById('falla').value = '';
-      document.getElementById('montoTotal').value = '0';
-      document.getElementById('montoAbono').value = '0';
-      document.getElementById('montoResta').value = '0';
-
-      toggleFormulario();
-    }
-
-    function cargarDatos() {
-      const ords = localStorage.getItem('celupro_ordenes');
-      const cnt = localStorage.getItem('celupro_contador');
-      if (ords) ordenes = JSON.parse(ords);
-      if (cnt) contadorID = parseInt(cnt);
-    }
-
-    function renderizarTodo() {
-      const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
-      const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
-      const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
-      const porCobrar = ordenes.reduce((acc, o) => acc + (o.resta || 0), 0);
-
-      document.getElementById('cardOrdenesActivas').textContent = activas;
-      document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
-      document.getElementById('cardIngresosMes').textContent = $${ingresosTotal.toFixed(2)};
-      document.getElementById('cardClientes').textContent = clientesUnicos;
-      document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
-
-      renderizarTabla(ordenes);
-    }
-
-    function renderizarTabla(lista) {
-      const tbody = document.getElementById('listaOrdenes');
-      tbody.innerHTML = '';
-
-      if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No hay órdenes registradas aún.</td></tr>';
-        return;
-      }
-
-      lista.forEach((ord, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="color:#2563eb; font-weight:bold;">${ord.id}</td>
-          <td><b>${ord.cliente}</b></td>
-          <td>${ord.equipo}</td>
-          <td><span class="badge">${ord.estado}</span></td>
-          <td>${ord.tecnico}</td>
-          <td><b>$${ord.total}</b></td>
-          <td style="text-align:center;">
-            <button class="btn-danger" onclick="eliminarOrden(${index})">Eliminar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
+      btnNuevoForm.addEventListener('click', function() {
+        if (formCard.style.display === 'block') {
+          formCard.style.display = 'none';
+        } else {
+          formCard.style.display = 'block';
+        }
       });
-    }
 
-    function eliminarOrden(index) {
-      if (confirm('¿Eliminar esta orden?')) {
-        ordenes.splice(index, 1);
-        localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
-        renderizarTodo();
+      btnCancelarForm.addEventListener('click', function() {
+        formCard.style.display = 'none';
+      });
+
+      function calcularResta() {
+        const total = parseFloat(montoTotalInput.value) || 0;
+        const abono = parseFloat(montoAbonoInput.value) || 0;
+        const resta = total - abono;
+        document.getElementById('montoResta').value = resta > 0 ? resta : 0;
       }
-    }
 
-    function filtrarOrdenes() {
-      const q = document.getElementById('buscar').value.toLowerCase();
-      const filtradas = ordenes.filter(o => o.cliente.toLowerCase().includes(q) || o.equipo.toLowerCase().includes(q) || o.id.toLowerCase().includes(q));
-      renderizarTabla(filtradas);
-    }
+      montoTotalInput.addEventListener('input', calcularResta);
+      montoAbonoInput.addEventListener('input', calcularResta);
 
-    window.onload = function() {
+      btnGuardar.addEventListener('click', function() {
+        const clienteVal = document.getElementById('cliente').value.trim();
+        const equipoVal = document.getElementById('equipo').value.trim();
+
+        if (!clienteVal || !equipoVal) {
+          alert('Por favor completa el Nombre del Cliente y el Equipo.');
+          return;
+        }
+
+        const total = parseFloat(montoTotalInput.value) || 0;
+        const abono = parseFloat(montoAbonoInput.value) || 0;
+
+        const nuevaOrden = {
+          id: '#ORD-' + contadorID,
+          cliente: clienteVal,
+          telefono: document.getElementById('telefono').value.trim() || 'N/A',
+          equipo: equipoVal,
+          falla: document.getElementById('falla').value.trim() || 'Sin diagnóstico',
+          tecnico: document.getElementById('tecnico').value,
+          total: total,
+          abono: abono,
+          resta: Math.max(0, total - abono),
+          estado: 'En Revision'
+        };
+
+        ordenes.unshift(nuevaOrden);
+        contadorID++;
+
+        localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+        localStorage.setItem('celupro_contador', contadorID.toString());
+
+        renderizarTodo();
+
+        document.getElementById('cliente').value = '';
+        document.getElementById('telefono').value = '';
+        document.getElementById('equipo').value = '';
+        document.getElementById('falla').value = '';
+        montoTotalInput.value = '0';
+        montoAbonoInput.value = '0';
+        document.getElementById('montoResta').value = '0';
+
+        formCard.style.display = 'none';
+      });
+
+      function cargarDatos() {
+        const ords = localStorage.getItem('celupro_ordenes');
+        const cnt = localStorage.getItem('celupro_contador');
+        if (ords) ordenes = JSON.parse(ords);
+        if (cnt) contadorID = parseInt(cnt);
+      }
+
+      function renderizarTodo() {
+        const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
+        const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
+        const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
+        const porCobrar = ordenes.reduce((acc, o) => acc + (o.resta || 0), 0);
+
+        document.getElementById('cardOrdenesActivas').textContent = activas;
+        document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
+        document.getElementById('cardIngresosMes').textContent = $${ingresosTotal.toFixed(2)};
+        document.getElementById('cardClientes').textContent = clientesUnicos;
+        document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
+
+        renderizarTabla(ordenes);
+      }
+
+      function renderizarTabla(lista) {
+        const tbody = document.getElementById('listaOrdenes');
+        tbody.innerHTML = '';
+
+        if (lista.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No hay órdenes registradas aún.</td></tr>';
+          return;
+        }
+
+        lista.forEach((ord, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="color:#2563eb; font-weight:bold;">${ord.id}</td>
+            <td><b>${ord.cliente}</b></td>
+            <td>${ord.equipo}</td>
+            <td><span class="badge">${ord.estado}</span></td>
+            <td>${ord.tecnico}</td>
+            <td><b>$${ord.total}</b></td>
+            <td style="text-align:center;">
+              <button class="btn-danger" data-idx="${index}">Eliminar</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.btn-danger').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const idx = this.getAttribute('data-idx');
+            if (confirm('¿Eliminar esta orden?')) {
+              ordenes.splice(idx, 1);
+              localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+              renderizarTodo();
+            }
+          });
+        });
+      }
+
+      buscarInput.addEventListener('input', function() {
+        const q = buscarInput.value.toLowerCase();
+        const filtradas = ordenes.filter(o => o.cliente.toLowerCase().includes(q) || o.equipo.toLowerCase().includes(q) || o.id.toLowerCase().includes(q));
+        renderizarTabla(filtradas);
+      });
+
       cargarDatos();
       renderizarTodo();
-    };
+    });
   </script>
 </body>
 </html>
