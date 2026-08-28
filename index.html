@@ -22,7 +22,7 @@
 
     <!-- FECHA Y HORA EN TIEMPO REAL -->
     <div class="w-full md:w-auto text-center bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl shadow-sm leading-tight">
-      <div id="fecha-colombia" class="text-xs sm:text-sm font-bold text-slate-700">--</div>
+      <div id="fecha-colombia" class="text-xs sm:text-sm font-bold text-slate-700">Cargando fecha...</div>
       <div id="reloj-colombia" class="text-sm sm:text-base font-extrabold text-blue-600 font-mono">--:--:--</div>
     </div>
 
@@ -102,7 +102,7 @@
   </main>
 
   <!-- MODAL NUEVA ORDEN -->
-  <div id="modalOrden" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm items-center justify-center p-4 z-50">
+  <div id="modalOrden" style="display: none;" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 text-slate-800">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h3 class="text-base font-bold text-slate-900">Crear Nueva Orden de Reparación</h3>
@@ -136,11 +136,11 @@
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="block text-xs text-slate-500 mb-1">Total ($)</label>
-            <input type="number" id="montoTotal" value="0" oninput="calcularSaldo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
+            <input type="number" id="montoTotal" value="0" onkeyup="calcularSaldo()" onchange="calcularSaldo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs text-slate-500 mb-1">Abono ($)</label>
-            <input type="number" id="montoAbono" value="0" oninput="calcularSaldo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
+            <input type="number" id="montoAbono" value="0" onkeyup="calcularSaldo()" onchange="calcularSaldo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs text-slate-500 mb-1">Resta ($)</label>
@@ -156,7 +156,7 @@
   </div>
 
   <script>
-    // LÓGICA DEL RELOJ COLOMBIA (AISLADA)
+    // LÓGICA DEL RELOJ EN TIEMPO REAL
     function mostrarHoraColombia() {
       try {
         const d = new Date();
@@ -184,52 +184,47 @@
         const elFecha = document.getElementById('fecha-colombia');
         const elReloj = document.getElementById('reloj-colombia');
 
-        if (elFecha) elFecha.textContent = ${nombreDia}, ${diaNum} de ${nombreMes} de ${anio};
-        if (elReloj) elReloj.textContent = ${horas}:${minutos}:${segundos} ${ampm};
-      } catch (e) {
-        console.error("Error reloj:", e);
+        if (elFecha) elFecha.innerText = nombreDia + ", " + diaNum + " de " + nombreMes + " de " + anio;
+        if (elReloj) elReloj.innerText = horas + ":" + minutos + ":" + segundos + " " + ampm;
+      } catch (err) {
+        console.log(err);
       }
     }
 
-    setInterval(mostrarHoraColombia, 1000);
     mostrarHoraColombia();
+    setInterval(mostrarHoraColombia, 1000);
 
-    // LÓGICA DEL DASHBOARD Y ORDENES
+    // LÓGICA DEL DASHBOARD
     let ordenes = [];
     let contadorID = 101;
 
     function abrirModal() {
-      const modal = document.getElementById('modalOrden');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      document.getElementById('modalOrden').style.display = 'flex';
     }
 
     function cerrarModal() {
-      const modal = document.getElementById('modalOrden');
-      modal.classList.remove('flex');
-      modal.classList.add('hidden');
+      document.getElementById('modalOrden').style.display = 'none';
     }
 
     function calcularSaldo() {
       const total = parseFloat(document.getElementById('montoTotal').value) || 0;
       const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
-      document.getElementById('montoResta').value = Math.max(0, total - abono);
+      const resta = total - abono;
+      document.getElementById('montoResta').value = resta < 0 ? 0 : resta;
     }
 
     function guardarOrden() {
-      const clienteInput = document.getElementById('cliente');
-      const equipoInput = document.getElementById('equipo');
-
-      const clienteVal = clienteInput ? clienteInput.value.trim() : '';
-      const equipoVal = equipoInput ? equipoInput.value.trim() : '';
+      const clienteVal = document.getElementById('cliente').value.trim();
+      const equipoVal = document.getElementById('equipo').value.trim();
 
       if (!clienteVal || !equipoVal) {
-        alert('Ingresa al menos el nombre del Cliente y el Equipo');
+        alert('Por favor, ingresa el nombre del Cliente y el Equipo.');
         return;
       }
 
       const total = parseFloat(document.getElementById('montoTotal').value) || 0;
       const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
+      const resta = parseFloat(document.getElementById('montoResta').value) || 0;
 
       const nuevaOrden = {
         id: '#ORD-' + contadorID,
@@ -240,7 +235,7 @@
         tecnico: document.getElementById('tecnico').value,
         total: total,
         abono: abono,
-        resta: Math.max(0, total - abono),
+        resta: resta,
         estado: 'En Revision',
         fecha: new Date().toISOString()
       };
@@ -251,15 +246,15 @@
       guardarDatos();
       renderizarTodo();
 
-      // Limpiar formulario
+      // Limpieza de campos
       document.getElementById('cliente').value = '';
       document.getElementById('telefono').value = '';
       document.getElementById('equipo').value = '';
       document.getElementById('falla').value = '';
       document.getElementById('montoTotal').value = '0';
       document.getElementById('montoAbono').value = '0';
-      calcularSaldo();
-      
+      document.getElementById('montoResta').value = '0';
+
       cerrarModal();
     }
 
