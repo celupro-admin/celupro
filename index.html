@@ -15,11 +15,18 @@
       <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-10 h-10 object-contain rounded-lg bg-black p-1 border border-slate-700">
       <div>
         <h1 class="text-xl font-bold text-slate-900 tracking-wide">CELUPRO</h1>
-        <p class="text-xs text-slate-400">Resumen general del taller</p>
+        <p class="text-xs text-slate-500 font-medium">Sistema de Gestión</p>
       </div>
     </div>
+
+    <!-- FECHA Y HORA EN TIEMPO REAL (COLOMBIA) -->
+    <div class="hidden md:flex flex-col items-center bg-slate-50 border border-slate-200 px-4 py-1.5 rounded-xl text-center">
+      <span id="relojHora" class="text-sm font-bold text-slate-800 font-mono">--:--:--</span>
+      <span id="relojFecha" class="text-[10px] text-slate-500 font-medium capitalize">--/--/----</span>
+    </div>
+
     <div>
-      <button id="btnAbrirModal" type="button" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-4 py-2.5 rounded-xl shadow-md transition-colors">
+      <button onclick="abrirModal()" type="button" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-4 py-2.5 rounded-xl shadow-md transition-colors cursor-pointer">
         + Crear Nueva Orden
       </button>
     </div>
@@ -90,7 +97,7 @@
     <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h3 class="text-base font-bold text-slate-900">Órdenes recientes</h3>
-        <input type="text" id="buscar" placeholder="Buscar cliente, equipo o ID..." class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 w-full sm:w-64">
+        <input type="text" id="buscar" oninput="filtrarOrdenes()" placeholder="Buscar cliente, equipo o ID..." class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 w-full sm:w-64">
       </div>
 
       <div class="overflow-x-auto">
@@ -117,7 +124,7 @@
     <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 text-slate-800">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h3 class="text-base font-bold text-slate-900">Crear Nueva Orden de Reparación</h3>
-        <button id="btnCerrarModal" class="text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
+        <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
       </div>
 
       <div class="space-y-3">
@@ -126,7 +133,7 @@
           <input type="text" id="cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
         </div>
         <div>
-          <label class="block text-xs text-slate-500 mb-1">Teléfono (Colombia)</label>
+          <label class="block text-xs text-slate-500 mb-1">Teléfono</label>
           <input type="text" id="telefono" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
         </div>
         <div>
@@ -147,11 +154,11 @@
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="block text-xs text-slate-500 mb-1">Total ($)</label>
-            <input type="number" id="montoTotal" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
+            <input type="number" id="montoTotal" oninput="calcularSaldo()" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs text-slate-500 mb-1">Abono ($)</label>
-            <input type="number" id="montoAbono" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
+            <input type="number" id="montoAbono" oninput="calcularSaldo()" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs text-slate-500 mb-1">Resta ($)</label>
@@ -159,7 +166,7 @@
           </div>
         </div>
 
-        <button id="btnGuardar" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-xl transition-colors mt-2 shadow-md">
+        <button onclick="guardarOrden()" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-xl transition-colors mt-2 shadow-md cursor-pointer">
           Guardar Orden
         </button>
       </div>
@@ -167,231 +174,238 @@
   </div>
 
   <script>
-    window.addEventListener('load', function() {
-      let ordenes = JSON.parse(localStorage.getItem('celupro_ordenes')) || [];
-      let contadorID = parseInt(localStorage.getItem('celupro_contador')) || 101;
+    let ordenes = JSON.parse(localStorage.getItem('celupro_ordenes')) || [];
+    let contadorID = parseInt(localStorage.getItem('celupro_contador')) || 101;
+    let chartBarrasInstancia = null;
+    let chartDonaInstancia = null;
 
-      const modalOrden = document.getElementById('modalOrden');
-      const btnAbrirModal = document.getElementById('btnAbrirModal');
-      const btnCerrarModal = document.getElementById('btnCerrarModal');
-      const btnGuardar = document.getElementById('btnGuardar');
-      const inputTotal = document.getElementById('montoTotal');
-      const inputAbono = document.getElementById('montoAbono');
-      const inputBuscar = document.getElementById('buscar');
+    // RELOJ HORA COLOMBIA (America/Bogota)
+    function actualizarReloj() {
+      const ahora = new Date();
+      const opcionesHora = { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+      const opcionesFecha = { timeZone: 'America/Bogota', weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
 
-      let chartBarrasInstancia = null;
-      let chartDonaInstancia = null;
+      document.getElementById('relojHora').textContent = ahora.toLocaleTimeString('es-CO', opcionesHora);
+      document.getElementById('relojFecha').textContent = ahora.toLocaleDateString('es-CO', opcionesFecha);
+    }
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
 
-      btnAbrirModal.onclick = () => { modalOrden.classList.remove('hidden'); modalOrden.classList.add('flex'); };
-      btnCerrarModal.onclick = () => { modalOrden.classList.add('hidden'); modalOrden.classList.remove('flex'); };
+    function abrirModal() {
+      const modal = document.getElementById('modalOrden');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
 
-      function calcularSaldo() {
-        const total = parseFloat(inputTotal.value) || 0;
-        const abono = parseFloat(inputAbono.value) || 0;
-        document.getElementById('montoResta').value = Math.max(0, total - abono);
+    function cerrarModal() {
+      const modal = document.getElementById('modalOrden');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function calcularSaldo() {
+      const total = parseFloat(document.getElementById('montoTotal').value) || 0;
+      const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
+      document.getElementById('montoResta').value = Math.max(0, total - abono);
+    }
+
+    function guardarOrden() {
+      const clienteVal = document.getElementById('cliente').value;
+      const equipoVal = document.getElementById('equipo').value;
+
+      if (!clienteVal || !equipoVal) {
+        alert('Ingresa al menos el Cliente y el Equipo');
+        return;
       }
 
-      inputTotal.oninput = calcularSaldo;
-      inputAbono.oninput = calcularSaldo;
+      const total = parseFloat(document.getElementById('montoTotal').value) || 0;
+      const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
+      const ahora = new Date();
 
-      btnGuardar.onclick = function() {
-        const clienteVal = document.getElementById('cliente').value;
-        const equipoVal = document.getElementById('equipo').value;
+      const nuevaOrden = {
+        id: '#ORD-' + contadorID,
+        cliente: clienteVal,
+        telefono: document.getElementById('telefono').value || 'N/A',
+        equipo: equipoVal,
+        falla: document.getElementById('falla').value || 'Sin diagnóstico',
+        tecnico: document.getElementById('tecnico').value,
+        total: total,
+        abono: abono,
+        resta: Math.max(0, total - abono),
+        estado: 'En Revision',
+        fecha: ahora.toISOString()
+      };
 
-        if (!clienteVal || !equipoVal) {
-          alert('Ingresa al menos el Cliente y el Equipo');
-          return;
-        }
+      ordenes.unshift(nuevaOrden);
+      contadorID++;
+      guardarDatos();
+      renderizarTodo();
 
-        const total = parseFloat(inputTotal.value) || 0;
-        const abono = parseFloat(inputAbono.value) || 0;
-        const ahora = new Date();
+      document.getElementById('cliente').value = '';
+      document.getElementById('telefono').value = '';
+      document.getElementById('equipo').value = '';
+      document.getElementById('falla').value = '';
+      document.getElementById('montoTotal').value = '0';
+      document.getElementById('montoAbono').value = '0';
+      calcularSaldo();
+      cerrarModal();
+    }
 
-        const nuevaOrden = {
-          id: '#ORD-' + contadorID,
-          cliente: clienteVal,
-          telefono: document.getElementById('telefono').value || 'N/A',
-          equipo: equipoVal,
-          falla: document.getElementById('falla').value || 'Sin diagnóstico',
-          tecnico: document.getElementById('tecnico').value,
-          total: total,
-          abono: abono,
-          resta: total - abono,
-          estado: 'En Revision',
-          fecha: ahora.toISOString()
-        };
+    function guardarDatos() {
+      localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+      localStorage.setItem('celupro_contador', contadorID.toString());
+    }
 
-        ordenes.unshift(nuevaOrden);
-        contadorID++;
+    function renderizarTodo() {
+      renderizarTarjetas();
+      renderizarGraficos();
+      renderizarOrdenes(ordenes);
+    }
+
+    function renderizarTarjetas() {
+      const mesActual = new Date().getMonth();
+      const anoActual = new Date().getFullYear();
+
+      const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
+      
+      const ordenesMes = ordenes.filter(o => {
+        const f = o.fecha ? new Date(o.fecha) : new Date();
+        return f.getMonth() === mesActual && f.getFullYear() === anoActual;
+      });
+      const ingresosMes = ordenesMes.reduce((acc, o) => acc + (o.abono || 0), 0);
+      const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
+
+      const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
+      const clientesMes = new Set(ordenesMes.map(o => o.cliente.toLowerCase())).size;
+
+      const pendientes = ordenes.filter(o => o.resta > 0);
+      const porCobrar = pendientes.reduce((acc, o) => acc + (o.resta || 0), 0);
+
+      document.getElementById('cardOrdenesActivas').textContent = activas;
+      document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
+      document.getElementById('cardIngresosMes').textContent = $${ingresosMes.toFixed(2)};
+      document.getElementById('cardIngresosTotal').textContent = $${ingresosTotal.toFixed(2)} histórico;
+      document.getElementById('cardClientes').textContent = clientesUnicos;
+      document.getElementById('cardClientesMes').textContent = ${clientesMes} este mes;
+      document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
+      document.getElementById('cardCantTrans').textContent = ${pendientes.length} pendientes;
+    }
+
+    function renderizarGraficos() {
+      const ctxBarras = document.getElementById('chartBarras').getContext('2d');
+      const ctxDona = document.getElementById('chartDona').getContext('2d');
+
+      if (chartBarrasInstancia) chartBarrasInstancia.destroy();
+      if (chartDonaInstancia) chartDonaInstancia.destroy();
+
+      const totalAcum = ordenes.reduce((acc, o) => acc + o.total, 0);
+      document.getElementById('totalSemanaTxt').textContent = $${totalAcum.toFixed(2)};
+
+      chartBarrasInstancia = new Chart(ctxBarras, {
+        type: 'bar',
+        data: {
+          labels: ['mié', 'jue', 'vie', 'sáb', 'dom', 'lun', 'mar'],
+          datasets: [{
+            label: 'Ingresos ($)',
+            data: [0, 0, 0, 0, 0, 0, totalAcum],
+            backgroundColor: '#3b82f6',
+            borderRadius: 6
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      const estadosCount = {
+        'En Revision': ordenes.filter(o => o.estado === 'En Revision').length,
+        'En Reparacion': ordenes.filter(o => o.estado === 'En Reparacion').length,
+        'Listo': ordenes.filter(o => o.estado === 'Listo').length,
+        'Entregado': ordenes.filter(o => o.estado === 'Entregado').length
+      };
+
+      chartDonaInstancia = new Chart(ctxDona, {
+        type: 'doughnut',
+        data: {
+          labels: ['En Revisión', 'En Reparación', 'Listo', 'Entregado'],
+          datasets: [{
+            data: [estadosCount['En Revision'], estadosCount['En Reparacion'], estadosCount['Listo'], estadosCount['Entregado']],
+            backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#64748b']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    function renderizarOrdenes(lista) {
+      const tbody = document.getElementById('listaOrdenes');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400">No hay órdenes registradas aún.</td></tr>';
+        return;
+      }
+
+      lista.forEach(function(ord, index) {
+        const colorBadge = {
+          'En Revision': 'bg-amber-50 text-amber-700 border-amber-200',
+          'En Reparacion': 'bg-blue-50 text-blue-700 border-blue-200',
+          'Listo': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          'Entregado': 'bg-slate-100 text-slate-700 border-slate-300'
+        }[ord.estado] || 'bg-slate-100 text-slate-700 border-slate-300';
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition-colors';
+        tr.innerHTML = `
+          <td class="py-3.5 px-3 font-mono text-xs text-blue-600 font-bold">${ord.id}</td>
+          <td class="py-3.5 px-3 font-medium text-slate-800">${ord.cliente}</td>
+          <td class="py-3.5 px-3 text-slate-600">${ord.equipo}</td>
+          <td class="py-3.5 px-3">
+            <select onchange="cambiarEstado(${index}, this.value)" class="text-xs rounded-full px-2 py-1 font-semibold border ${colorBadge} bg-white cursor-pointer focus:outline-none">
+              <option value="En Revision" ${ord.estado === 'En Revision' ? 'selected' : ''}>En Revision</option>
+              <option value="En Reparacion" ${ord.estado === 'En Reparacion' ? 'selected' : ''}>En Reparacion</option>
+              <option value="Listo" ${ord.estado === 'Listo' ? 'selected' : ''}>Listo</option>
+              <option value="Entregado" ${ord.estado === 'Entregado' ? 'selected' : ''}>Entregado</option>
+            </select>
+          </td>
+          <td class="py-3.5 px-3 text-slate-600">${ord.tecnico}</td>
+          <td class="py-3.5 px-3 font-semibold text-slate-900">$${ord.total}</td>
+          <td class="py-3.5 px-3 text-center">
+            <button onclick="borrarOrden(${index})" class="px-2 py-1 bg-rose-50 text-rose-600 border border-rose-200 text-xs rounded-lg hover:bg-rose-100 cursor-pointer">
+              Eliminar
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function cambiarEstado(index, nuevoEstado) {
+      ordenes[index].estado = nuevoEstado;
+      guardarDatos();
+      renderizarTodo();
+    }
+
+    function borrarOrden(index) {
+      if (confirm('¿Seguro que deseas eliminar esta orden?')) {
+        ordenes.splice(index, 1);
         guardarDatos();
         renderizarTodo();
-
-        document.getElementById('cliente').value = '';
-        document.getElementById('telefono').value = '';
-        document.getElementById('equipo').value = '';
-        document.getElementById('falla').value = '';
-        inputTotal.value = '0';
-        inputAbono.value = '0';
-        calcularSaldo();
-        modalOrden.classList.add('hidden');
-        modalOrden.classList.remove('flex');
-      };
-
-      function guardarDatos() {
-        localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
-        localStorage.setItem('celupro_contador', contadorID.toString());
       }
+    }
 
-      function renderizarTodo() {
-        renderizarTarjetas();
-        renderizarGraficos();
-        renderizarOrdenes();
-      }
+    function filtrarOrdenes() {
+      const texto = document.getElementById('buscar').value.toLowerCase();
+      const filtradas = ordenes.filter(function(o) {
+        return o.cliente.toLowerCase().includes(texto) ||
+               o.equipo.toLowerCase().includes(texto) ||
+               o.id.toLowerCase().includes(texto);
+      });
+      renderizarOrdenes(filtradas);
+    }
 
-      function renderizarTarjetas() {
-        const mesActual = new Date().getMonth();
-        const anoActual = new Date().getFullYear();
-
-        const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
-        
-        const ordenesMes = ordenes.filter(o => {
-          const f = o.fecha ? new Date(o.fecha) : new Date();
-          return f.getMonth() === mesActual && f.getFullYear() === anoActual;
-        });
-        const ingresosMes = ordenesMes.reduce((acc, o) => acc + (o.abono || 0), 0);
-        const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
-
-        const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
-        const clientesMes = new Set(ordenesMes.map(o => o.cliente.toLowerCase())).size;
-
-        const pendientes = ordenes.filter(o => o.resta > 0);
-        const porCobrar = pendientes.reduce((acc, o) => acc + (o.resta || 0), 0);
-
-        document.getElementById('cardOrdenesActivas').textContent = activas;
-        document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
-        document.getElementById('cardIngresosMes').textContent = $${ingresosMes.toFixed(2)};
-        document.getElementById('cardIngresosTotal').textContent = $${ingresosTotal.toFixed(2)} histórico;
-        document.getElementById('cardClientes').textContent = clientesUnicos;
-        document.getElementById('cardClientesMes').textContent = ${clientesMes} este mes;
-        document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
-        document.getElementById('cardCantTrans').textContent = ${pendientes.length} pendientes;
-      }
-
-      function renderizarGraficos() {
-        const ctxBarras = document.getElementById('chartBarras').getContext('2d');
-        const ctxDona = document.getElementById('chartDona').getContext('2d');
-
-        if (chartBarrasInstancia) chartBarrasInstancia.destroy();
-        if (chartDonaInstancia) chartDonaInstancia.destroy();
-
-        const totalAcum = ordenes.reduce((acc, o) => acc + o.total, 0);
-        document.getElementById('totalSemanaTxt').textContent = $${totalAcum.toFixed(2)};
-
-        chartBarrasInstancia = new Chart(ctxBarras, {
-          type: 'bar',
-          data: {
-            labels: ['mié', 'jue', 'vie', 'sáb', 'dom', 'lun', 'mar'],
-            datasets: [{
-              label: 'Ingresos ($)',
-              data: [0, 0, 0, 0, 0, 0, totalAcum],
-              backgroundColor: '#3b82f6',
-              borderRadius: 6
-            }]
-          },
-          options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        const estadosCount = {
-          'En Revision': ordenes.filter(o => o.estado === 'En Revision').length,
-          'En Reparacion': ordenes.filter(o => o.estado === 'En Reparacion').length,
-          'Listo': ordenes.filter(o => o.estado === 'Listo').length,
-          'Entregado': ordenes.filter(o => o.estado === 'Entregado').length
-        };
-
-        chartDonaInstancia = new Chart(ctxDona, {
-          type: 'doughnut',
-          data: {
-            labels: ['En Revisión', 'En Reparación', 'Listo', 'Entregado'],
-            datasets: [{
-              data: [estadosCount['En Revision'], estadosCount['En Reparacion'], estadosCount['Listo'], estadosCount['Entregado']],
-              backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#64748b']
-            }]
-          },
-          options: { responsive: true, maintainAspectRatio: false }
-        });
-      }
-
-      function renderizarOrdenes(lista = ordenes) {
-        const tbody = document.getElementById('listaOrdenes');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        if (lista.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400">No hay órdenes registradas aún.</td></tr>';
-          return;
-        }
-
-        lista.forEach(function(ord, index) {
-          const colorBadge = {
-            'En Revision': 'bg-amber-50 text-amber-700 border-amber-200',
-            'En Reparacion': 'bg-blue-50 text-blue-700 border-blue-200',
-            'Listo': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-            'Entregado': 'bg-slate-100 text-slate-700 border-slate-300'
-          }[ord.estado] || 'bg-slate-100 text-slate-700 border-slate-300';
-
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-slate-50 transition-colors';
-          tr.innerHTML = `
-            <td class="py-3.5 px-3 font-mono text-xs text-blue-600 font-bold">${ord.id}</td>
-            <td class="py-3.5 px-3 font-medium text-slate-800">${ord.cliente}</td>
-            <td class="py-3.5 px-3 text-slate-600">${ord.equipo}</td>
-            <td class="py-3.5 px-3">
-              <select class="selEstado text-xs rounded-full px-2 py-1 font-semibold border ${colorBadge} bg-white cursor-pointer focus:outline-none">
-                <option value="En Revision" ${ord.estado === 'En Revision' ? 'selected' : ''}>En Revision</option>
-                <option value="En Reparacion" ${ord.estado === 'En Reparacion' ? 'selected' : ''}>En Reparacion</option>
-                <option value="Listo" ${ord.estado === 'Listo' ? 'selected' : ''}>Listo</option>
-                <option value="Entregado" ${ord.estado === 'Entregado' ? 'selected' : ''}>Entregado</option>
-              </select>
-            </td>
-            <td class="py-3.5 px-3 text-slate-600">${ord.tecnico}</td>
-            <td class="py-3.5 px-3 font-semibold text-slate-900">$${ord.total}</td>
-            <td class="py-3.5 px-3 text-center">
-              <button class="btnBorrar px-2 py-1 bg-rose-50 text-rose-600 border border-rose-200 text-xs rounded-lg hover:bg-rose-100">
-                Eliminar
-              </button>
-            </td>
-          `;
-
-          tr.querySelector('.selEstado').onchange = function() {
-            ordenes[index].estado = this.value;
-            guardarDatos();
-            renderizarTodo();
-          };
-
-          tr.querySelector('.btnBorrar').onclick = function() {
-            if (confirm('¿Seguro que deseas eliminar esta orden?')) {
-              ordenes.splice(index, 1);
-              guardarDatos();
-              renderizarTodo();
-            }
-          };
-
-          tbody.appendChild(tr);
-        });
-      }
-
-      inputBuscar.oninput = function() {
-        const texto = this.value.toLowerCase();
-        const filtradas = ordenes.filter(function(o) {
-          return o.cliente.toLowerCase().includes(texto) ||
-                 o.equipo.toLowerCase().includes(texto) ||
-                 o.id.toLowerCase().includes(texto);
-        });
-        renderizarOrdenes(filtradas);
-      };
-
+    window.onload = function() {
       renderizarTodo();
-    });
+    };
   </script>
 </body>
 </html>
