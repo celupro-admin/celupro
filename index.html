@@ -3,28 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Celupro - Sistema de Gestión</title>
+  <title>Celupro - Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
   <!-- PANTALLA DE LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-slate-950 flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
-      <!-- LOGO CELUPRO EN LOGIN -->
-      <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-24 h-24 mx-auto mb-3 object-contain rounded-xl bg-black p-1 border border-slate-700 shadow-md">
-      
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
+      <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-20 h-20 mx-auto mb-3 object-contain rounded-xl bg-black p-1 border border-slate-700 shadow-md">
       <h1 class="text-2xl font-bold tracking-wide text-white">CELUPRO</h1>
       <p class="text-xs text-slate-400 mb-6">Sistema de Gestión de Servicio Técnico</p>
       
       <div class="space-y-4 text-left">
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Usuario</label>
-          <input type="text" id="loginUser" value="admin" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+          <input type="text" id="loginUser" value="admin" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Contraseña</label>
-          <input type="password" id="loginPass" value="1234" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+          <input type="password" id="loginPass" value="1234" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         
         <button id="btnEntrar" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors mt-2 shadow-lg shadow-blue-600/30">
@@ -35,89 +34,169 @@
   </div>
 
   <!-- APLICACIÓN PRINCIPAL -->
-  <div id="mainApp" style="display: none;" class="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700">
+  <div id="mainApp" style="display: none;" class="w-full min-h-screen flex flex-col bg-slate-100 text-slate-800">
+    
+    <!-- HEADER SUPERIOR -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div class="flex items-center gap-3">
-        <!-- LOGO CELUPRO EN ENCABEZADO -->
-        <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-12 h-12 object-contain rounded-lg bg-black p-1 border border-slate-700">
+        <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-10 h-10 object-contain rounded-lg bg-black p-1 border border-slate-700">
         <div>
-          <h1 class="text-xl font-bold text-white tracking-wide">CELUPRO</h1>
-          <p class="text-xs text-slate-400">Sistema de Gestión de Servicio Técnico</p>
+          <h1 class="text-xl font-bold text-slate-900 tracking-wide">CELUPRO</h1>
+          <p class="text-xs text-slate-400">Resumen general del taller</p>
         </div>
       </div>
-      <button id="btnCerrar" type="button" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg transition-colors text-slate-300">
-        Cerrar Sesión
-      </button>
+      <div class="flex items-center gap-3">
+        <button id="btnAbrirModal" type="button" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-4 py-2.5 rounded-xl shadow-md transition-colors">
+          + Crear Nueva Orden
+        </button>
+        <button id="btnCerrar" type="button" class="bg-slate-200 hover:bg-slate-300 text-xs px-3 py-2.5 rounded-xl transition-colors text-slate-700 font-semibold">
+          Cerrar Sesión
+        </button>
+      </div>
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- FORMULARIO DE ÓRDEN -->
-      <div class="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-xl space-y-4">
-        <h2 class="text-lg font-bold text-white">Nueva Orden de Reparación</h2>
-        <div class="space-y-3">
+    <main class="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
+
+      <!-- TARJETAS DE MÉTRICAS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Órdenes activas -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Nombre del Cliente</label>
-            <input type="text" id="cliente" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+            <p class="text-xs text-slate-500 font-medium">Órdenes activas</p>
+            <h3 id="cardOrdenesActivas" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
+            <span id="cardTotalOrdenes" class="text-[11px] text-slate-400">0 total</span>
           </div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold">📋</div>
+        </div>
+
+        <!-- Ingresos del mes -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Teléfono (Colombia)</label>
-            <input type="text" id="telefono" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+            <p class="text-xs text-slate-500 font-medium">Ingresos del mes</p>
+            <h3 id="cardIngresosMes" class="text-2xl font-bold text-slate-900 mt-1">$0.00</h3>
+            <span id="cardIngresosTotal" class="text-[11px] text-emerald-600 font-medium">$0.00 histórico</span>
           </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">💲</div>
+        </div>
+
+        <!-- Clientes -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Equipo / Modelo</label>
-            <input type="text" id="equipo" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+            <p class="text-xs text-slate-500 font-medium">Clientes</p>
+            <h3 id="cardClientes" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
+            <span id="cardClientesMes" class="text-[11px] text-slate-400">0 este mes</span>
           </div>
+          <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg font-bold">👥</div>
+        </div>
+
+        <!-- Transacciones / Por Cobrar -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Técnico Asignado</label>
-            <select id="tecnico" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
-              <option value="Robert">Robert</option>
-              <option value="Técnico 2">Técnico 2</option>
-            </select>
+            <p class="text-xs text-slate-500 font-medium">Transacciones (Por Cobrar)</p>
+            <h3 id="cardPorCobrar" class="text-2xl font-bold text-rose-600 mt-1">$0.00</h3>
+            <span id="cardCantTrans" class="text-[11px] text-slate-400">0 pendientes</span>
           </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Falla / Diagnóstico Inicial</label>
-            <textarea id="falla" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"></textarea>
+          <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg font-bold">💳</div>
+        </div>
+      </div>
+
+      <!-- GRÁFICOS -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-slate-900">Ingresos semanales</h3>
+            <span id="totalSemanaTxt" class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-lg">$0.00</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Total ($)</label>
-              <input type="number" id="montoTotal" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm text-white focus:outline-none">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Abono ($)</label>
-              <input type="number" id="montoAbono" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm text-white focus:outline-none">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Resta ($)</label>
-              <input type="number" id="montoResta" value="0" readonly class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-2 text-sm text-rose-400 font-bold focus:outline-none">
-            </div>
+          <div class="h-56">
+            <canvas id="chartBarras"></canvas>
           </div>
-          <button id="btnGuardar" type="button" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded-lg transition-colors mt-2">
-            Guardar Orden
-          </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-sm font-bold text-slate-900">Órdenes por estado</h3>
+          <div class="h-56 flex justify-center items-center">
+            <canvas id="chartDona"></canvas>
+          </div>
         </div>
       </div>
 
       <!-- TABLA DE ÓRDENES -->
-      <div class="lg:col-span-2 bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-xl space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 class="text-lg font-bold text-white">Órdenes Registradas</h2>
-          <input type="text" id="buscar" placeholder="Buscar cliente, equipo o ID..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none w-full sm:w-64">
+          <h3 class="text-base font-bold text-slate-900">Órdenes recientes</h3>
+          <input type="text" id="buscar" placeholder="Buscar cliente, equipo o ID..." class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 w-full sm:w-64">
         </div>
+
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-slate-900 text-slate-400 uppercase font-semibold">
+            <thead class="bg-slate-50 text-slate-400 uppercase font-semibold border-b border-slate-100">
               <tr>
-                <th class="py-3 px-3">ID / Cliente</th>
-                <th class="py-3 px-3">Equipo / Falla</th>
-                <th class="py-3 px-3">Estado</th>
-                <th class="py-3 px-3">Pagos</th>
-                <th class="py-3 px-3 text-center">Acciones</th>
+                <th class="py-3 px-3">ORDEN</th>
+                <th class="py-3 px-3">CLIENTE</th>
+                <th class="py-3 px-3">EQUIPO</th>
+                <th class="py-3 px-3">ESTADO</th>
+                <th class="py-3 px-3">TÉCNICO</th>
+                <th class="py-3 px-3">COSTO</th>
+                <th class="py-3 px-3 text-center">ACCIONES</th>
               </tr>
             </thead>
-            <tbody id="listaOrdenes" class="divide-y divide-slate-700"></tbody>
+            <tbody id="listaOrdenes" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL NUEVA ORDEN -->
+  <div id="modalOrden" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 text-slate-800">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">Crear Nueva Orden de Reparación</h3>
+        <button id="btnCerrarModal" class="text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">Nombre del Cliente</label>
+          <input type="text" id="cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">Teléfono (Colombia)</label>
+          <input type="text" id="telefono" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">Equipo / Modelo</label>
+          <input type="text" id="equipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">Técnico Asignado</label>
+          <select id="tecnico" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
+            <option value="Robert">Robert</option>
+            <option value="Andrés Anzola">Andrés Anzola</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">Falla / Diagnóstico Inicial</label>
+          <textarea id="falla" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500"></textarea>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">Total ($)</label>
+            <input type="number" id="montoTotal" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">Abono ($)</label>
+            <input type="number" id="montoAbono" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-800 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">Resta ($)</label>
+            <input type="number" id="montoResta" value="0" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-2 py-2 text-xs text-rose-600 font-bold focus:outline-none">
+          </div>
+        </div>
+
+        <button id="btnGuardar" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-xl transition-colors mt-2 shadow-md">
+          Guardar Orden
+        </button>
       </div>
     </div>
   </div>
@@ -129,12 +208,18 @@
 
       const loginScreen = document.getElementById('loginScreen');
       const mainApp = document.getElementById('mainApp');
+      const modalOrden = document.getElementById('modalOrden');
       const btnEntrar = document.getElementById('btnEntrar');
       const btnCerrar = document.getElementById('btnCerrar');
+      const btnAbrirModal = document.getElementById('btnAbrirModal');
+      const btnCerrarModal = document.getElementById('btnCerrarModal');
       const btnGuardar = document.getElementById('btnGuardar');
       const inputTotal = document.getElementById('montoTotal');
       const inputAbono = document.getElementById('montoAbono');
       const inputBuscar = document.getElementById('buscar');
+
+      let chartBarrasInstancia = null;
+      let chartDonaInstancia = null;
 
       btnEntrar.onclick = function() {
         const u = document.getElementById('loginUser').value.trim();
@@ -142,8 +227,8 @@
 
         if (u === "admin" && p === "1234") {
           loginScreen.style.display = 'none';
-          mainApp.style.display = 'block';
-          renderizarOrdenes();
+          mainApp.style.display = 'flex';
+          renderizarTodo();
         } else {
           alert('Usuario o contraseña incorrectos (Usar admin / 1234)');
         }
@@ -153,6 +238,9 @@
         mainApp.style.display = 'none';
         loginScreen.style.display = 'flex';
       };
+
+      btnAbrirModal.onclick = () => { modalOrden.classList.remove('hidden'); modalOrden.classList.add('flex'); };
+      btnCerrarModal.onclick = () => { modalOrden.classList.add('hidden'); modalOrden.classList.remove('flex'); };
 
       function calcularSaldo() {
         const total = parseFloat(inputTotal.value) || 0;
@@ -174,6 +262,7 @@
 
         const total = parseFloat(inputTotal.value) || 0;
         const abono = parseFloat(inputAbono.value) || 0;
+        const ahora = new Date();
 
         const nuevaOrden = {
           id: '#ORD-' + contadorID,
@@ -185,13 +274,14 @@
           total: total,
           abono: abono,
           resta: total - abono,
-          estado: 'En Revision'
+          estado: 'En Revision',
+          fecha: ahora.toISOString()
         };
 
         ordenes.unshift(nuevaOrden);
         contadorID++;
         guardarDatos();
-        renderizarOrdenes();
+        renderizarTodo();
 
         document.getElementById('cliente').value = '';
         document.getElementById('telefono').value = '';
@@ -200,11 +290,95 @@
         inputTotal.value = '0';
         inputAbono.value = '0';
         calcularSaldo();
+        modalOrden.classList.add('hidden');
+        modalOrden.classList.remove('flex');
       };
 
       function guardarDatos() {
         localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
         localStorage.setItem('celupro_contador', contadorID.toString());
+      }
+
+      function renderizarTodo() {
+        renderizarTarjetas();
+        renderizarGraficos();
+        renderizarOrdenes();
+      }
+
+      function renderizarTarjetas() {
+        const mesActual = new Date().getMonth();
+        const anoActual = new Date().getFullYear();
+
+        const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
+        
+        // Ingresos del mes
+        const ordenesMes = ordenes.filter(o => {
+          const f = o.fecha ? new Date(o.fecha) : new Date();
+          return f.getMonth() === mesActual && f.getFullYear() === anoActual;
+        });
+        const ingresosMes = ordenesMes.reduce((acc, o) => acc + (o.abono || 0), 0);
+        const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
+
+        // Clientes
+        const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
+        const clientesMes = new Set(ordenesMes.map(o => o.cliente.toLowerCase())).size;
+
+        // Transacciones pendientes
+        const pendientes = ordenes.filter(o => o.resta > 0);
+        const porCobrar = pendientes.reduce((acc, o) => acc + (o.resta || 0), 0);
+
+        document.getElementById('cardOrdenesActivas').textContent = activas;
+        document.getElementById('cardTotalOrdenes').textContent = ${ordenes.length} total;
+        document.getElementById('cardIngresosMes').textContent = $${ingresosMes.toFixed(2)};
+        document.getElementById('cardIngresosTotal').textContent = $${ingresosTotal.toFixed(2)} histórico;
+        document.getElementById('cardClientes').textContent = clientesUnicos;
+        document.getElementById('cardClientesMes').textContent = ${clientesMes} este mes;
+        document.getElementById('cardPorCobrar').textContent = $${porCobrar.toFixed(2)};
+        document.getElementById('cardCantTrans').textContent = ${pendientes.length} pendientes;
+      }
+
+      function renderizarGraficos() {
+        const ctxBarras = document.getElementById('chartBarras').getContext('2d');
+        const ctxDona = document.getElementById('chartDona').getContext('2d');
+
+        if (chartBarrasInstancia) chartBarrasInstancia.destroy();
+        if (chartDonaInstancia) chartDonaInstancia.destroy();
+
+        const totalAcum = ordenes.reduce((acc, o) => acc + o.total, 0);
+        document.getElementById('totalSemanaTxt').textContent = $${totalAcum.toFixed(2)};
+
+        chartBarrasInstancia = new Chart(ctxBarras, {
+          type: 'bar',
+          data: {
+            labels: ['mié', 'jue', 'vie', 'sáb', 'dom', 'lun', 'mar'],
+            datasets: [{
+              label: 'Ingresos ($)',
+              data: [0, 0, 0, 0, 0, 0, totalAcum],
+              backgroundColor: '#3b82f6',
+              borderRadius: 6
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        const estadosCount = {
+          'En Revision': ordenes.filter(o => o.estado === 'En Revision').length,
+          'En Reparacion': ordenes.filter(o => o.estado === 'En Reparacion').length,
+          'Listo': ordenes.filter(o => o.estado === 'Listo').length,
+          'Entregado': ordenes.filter(o => o.estado === 'Entregado').length
+        };
+
+        chartDonaInstancia = new Chart(ctxDona, {
+          type: 'doughnut',
+          data: {
+            labels: ['En Revisión', 'En Reparación', 'Listo', 'Entregado'],
+            datasets: [{
+              data: [estadosCount['En Revision'], estadosCount['En Reparacion'], estadosCount['Listo'], estadosCount['Entregado']],
+              backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#64748b']
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
       }
 
       function renderizarOrdenes(lista = ordenes) {
@@ -213,46 +387,36 @@
         tbody.innerHTML = '';
 
         if (lista.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500">No hay órdenes registradas aún.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400">No hay órdenes registradas aún.</td></tr>';
           return;
         }
 
         lista.forEach(function(ord, index) {
-          const colorEstado = {
-            'En Revision': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-            'En Reparacion': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-            'Listo': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-            'Entregado': 'bg-slate-700/50 text-slate-400 border-slate-600'
-          }[ord.estado] || 'bg-slate-700/50 text-slate-400 border-slate-600';
+          const colorBadge = {
+            'En Revision': 'bg-amber-50 text-amber-700 border-amber-200',
+            'En Reparacion': 'bg-blue-50 text-blue-700 border-blue-200',
+            'Listo': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            'Entregado': 'bg-slate-100 text-slate-700 border-slate-300'
+          }[ord.estado] || 'bg-slate-100 text-slate-700 border-slate-300';
 
           const tr = document.createElement('tr');
-          tr.className = 'hover:bg-slate-700/30 transition-colors';
+          tr.className = 'hover:bg-slate-50 transition-colors';
           tr.innerHTML = `
-            <td class="py-3 px-3">
-              <span class="font-mono text-xs text-indigo-400 font-bold block">${ord.id}</span>
-              <span class="font-medium text-white">${ord.cliente}</span>
-              <span class="block text-xs text-slate-400">${ord.telefono}</span>
-            </td>
-            <td class="py-3 px-3">
-              <span class="font-medium text-white block">${ord.equipo}</span>
-              <span class="text-xs text-slate-400 line-clamp-1">${ord.falla}</span>
-              <span class="text-[10px] text-slate-500">Téc: ${ord.tecnico}</span>
-            </td>
-            <td class="py-3 px-3">
-              <select class="selEstado text-xs rounded-full px-2 py-1 font-semibold border ${colorEstado} bg-slate-900 focus:outline-none cursor-pointer text-white">
+            <td class="py-3.5 px-3 font-mono text-xs text-blue-600 font-bold">${ord.id}</td>
+            <td class="py-3.5 px-3 font-medium text-slate-800">${ord.cliente}</td>
+            <td class="py-3.5 px-3 text-slate-600">${ord.equipo}</td>
+            <td class="py-3.5 px-3">
+              <select class="selEstado text-xs rounded-full px-2 py-1 font-semibold border ${colorBadge} bg-white cursor-pointer focus:outline-none">
                 <option value="En Revision" ${ord.estado === 'En Revision' ? 'selected' : ''}>En Revision</option>
                 <option value="En Reparacion" ${ord.estado === 'En Reparacion' ? 'selected' : ''}>En Reparacion</option>
                 <option value="Listo" ${ord.estado === 'Listo' ? 'selected' : ''}>Listo</option>
                 <option value="Entregado" ${ord.estado === 'Entregado' ? 'selected' : ''}>Entregado</option>
               </select>
             </td>
-            <td class="py-3 px-3 text-xs">
-              <span class="block">Total: <strong class="text-white">$${ord.total}</strong></span>
-              <span class="block text-emerald-400">Abono: $${ord.abono}</span>
-              <span class="block text-rose-400 font-bold">Resta: $${ord.resta}</span>
-            </td>
-            <td class="py-3 px-3 text-center">
-              <button class="btnBorrar px-2 py-1 bg-rose-500/20 text-rose-400 text-xs rounded hover:bg-rose-500/40">
+            <td class="py-3.5 px-3 text-slate-600">${ord.tecnico}</td>
+            <td class="py-3.5 px-3 font-semibold text-slate-900">$${ord.total}</td>
+            <td class="py-3.5 px-3 text-center">
+              <button class="btnBorrar px-2 py-1 bg-rose-50 text-rose-600 border border-rose-200 text-xs rounded-lg hover:bg-rose-100">
                 Eliminar
               </button>
             </td>
@@ -261,14 +425,14 @@
           tr.querySelector('.selEstado').onchange = function() {
             ordenes[index].estado = this.value;
             guardarDatos();
-            renderizarOrdenes();
+            renderizarTodo();
           };
 
           tr.querySelector('.btnBorrar').onclick = function() {
             if (confirm('¿Seguro que deseas eliminar esta orden?')) {
               ordenes.splice(index, 1);
               guardarDatos();
-              renderizarOrdenes();
+              renderizarTodo();
             }
           };
 
