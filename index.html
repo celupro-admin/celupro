@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Celupro - Sistema de Gestion</title>
+  <title>Celupro - Sistema de Gestión</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
-  <!-- PANTALLA DE LOGIN (SIN FORMULARIO) -->
+  <!-- PANTALLA DE LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-slate-950 flex items-center justify-center p-4 z-50">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
       <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs810VttVU9_nb" alt="Celupro Logo" class="w-20 h-20 mx-auto mb-3 object-contain rounded-xl bg-black p-1 border border-slate-700 shadow-md">
-      
       <h1 class="text-2xl font-bold tracking-wide text-white">CELUPRO</h1>
-      <p class="text-xs text-slate-400 mb-6">Sistema de Gestion de Servicio Tecnico</p>
+      <p class="text-xs text-slate-400 mb-6">Sistema de Gestión de Servicio Técnico</p>
       
       <div class="space-y-4 text-left">
         <div>
@@ -22,50 +21,250 @@
           <input type="text" id="loginUser" value="admin" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Contrasena</label>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Contraseña</label>
           <input type="password" id="loginPass" value="1234" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
         </div>
         
-        <button id="btnEntrarLogin" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors mt-2 shadow-lg shadow-blue-600/30">
+        <button type="button" onclick="entrarAlSistema()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors mt-2 shadow-lg shadow-blue-600/30">
           Entrar
         </button>
       </div>
     </div>
   </div>
 
-  <!-- PANEL PRINCIPAL -->
-  <div class="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+  <!-- APLICACIÓN PRINCIPAL -->
+  <div id="mainApp" class="hidden max-w-7xl mx-auto p-4 md:p-6 space-y-6">
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700">
       <div class="flex items-center gap-3">
         <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs810VttVU9_nb" alt="Celupro Logo" class="w-10 h-10 object-contain rounded-lg bg-black p-1 border border-slate-700">
         <div>
           <h1 class="text-xl font-bold text-white tracking-wide">CELUPRO</h1>
-          <p class="text-xs text-slate-400">Control de Servicio Tecnico</p>
+          <p class="text-xs text-slate-400">Sistema de Gestión de Servicio Técnico</p>
         </div>
       </div>
-      <button onclick="document.getElementById('loginScreen').style.display='flex'" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg transition-colors text-slate-300">
-        Cerrar Sesion
+      <button onclick="cerrarSesion()" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg transition-colors text-slate-300">
+        Cerrar Sesión
       </button>
     </header>
 
-    <main class="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-xl">
-      <h2 class="text-lg font-bold text-white mb-4">Panel de Control</h2>
-      <p class="text-slate-300 text-sm">Bienvenido al sistema Celupro. Todo el sistema esta activo y listo para usarse.</p>
-    </main>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- FORMULARIO DE ORDEN -->
+      <div class="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-xl space-y-4">
+        <h2 class="text-lg font-bold text-white">Nueva Orden de Reparación</h2>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Nombre del Cliente</label>
+            <input type="text" id="cliente" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Teléfono (Colombia)</label>
+            <input type="text" id="telefono" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Equipo / Modelo</label>
+            <input type="text" id="equipo" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Técnico Asignado</label>
+            <select id="tecnico" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+              <option value="Robert">Robert</option>
+              <option value="Técnico 2">Técnico 2</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Falla / Diagnóstico Inicial</label>
+            <textarea id="falla" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"></textarea>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Total ($)</label>
+              <input type="number" id="montoTotal" value="0" oninput="calcularSaldo()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm text-white focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Abono ($)</label>
+              <input type="number" id="montoAbono" value="0" oninput="calcularSaldo()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm text-white focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Resta ($)</label>
+              <input type="number" id="montoResta" value="0" readonly class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-2 text-sm text-rose-400 font-bold focus:outline-none">
+            </div>
+          </div>
+          <button onclick="agregarOrden()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded-lg transition-colors mt-2">
+            Guardar Orden
+          </button>
+        </div>
+      </div>
+
+      <!-- TABLA DE ÓRDENES -->
+      <div class="lg:col-span-2 bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 class="text-lg font-bold text-white">Órdenes Registradas</h2>
+          <input type="text" id="buscar" oninput="filtrarOrdenes()" placeholder="Buscar cliente, equipo o ID..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none w-full sm:w-64">
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900 text-slate-400 uppercase font-semibold">
+              <tr>
+                <th class="py-3 px-3">ID / Cliente</th>
+                <th class="py-3 px-3">Equipo / Falla</th>
+                <th class="py-3 px-3">Estado</th>
+                <th class="py-3 px-3">Pagos</th>
+                <th class="py-3 px-3 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="listaOrdenes" class="divide-y divide-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const loginScreen = document.getElementById('loginScreen');
-      const btnEntrar = document.getElementById('btnEntrarLogin');
+    function entrarAlSistema() {
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value.trim();
 
-      if (btnEntrar && loginScreen) {
-        btnEntrar.addEventListener('click', function(e) {
-          e.preventDefault();
-          loginScreen.style.display = 'none';
-        });
+      if (u === "admin" && p === "1234") {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainApp').classList.remove('hidden');
+        renderizarOrdenes();
+      } else {
+        alert('Usuario o contraseña incorrectos. Usa admin / 1234');
       }
-    });
+    }
+
+    function cerrarSesion() {
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+
+    let ordenes = JSON.parse(localStorage.getItem('celupro_ordenes')) || [];
+    let contadorID = parseInt(localStorage.getItem('celupro_contador')) || 101;
+
+    function calcularSaldo() {
+      const total = parseFloat(document.getElementById('montoTotal').value) || 0;
+      const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
+      document.getElementById('montoResta').value = Math.max(0, total - abono);
+    }
+
+    function agregarOrden() {
+      const clienteVal = document.getElementById('cliente').value;
+      const equipoVal = document.getElementById('equipo').value;
+      if (!clienteVal || !equipoVal) {
+        alert('Por favor ingresa al menos el Nombre del Cliente y el Equipo');
+        return;
+      }
+      const total = parseFloat(document.getElementById('montoTotal').value) || 0;
+      const abono = parseFloat(document.getElementById('montoAbono').value) || 0;
+      
+      const nuevaOrden = {
+        id: #ORD-${contadorID},
+        cliente: clienteVal,
+        telefono: document.getElementById('telefono').value || 'N/A',
+        equipo: equipoVal,
+        falla: document.getElementById('falla').value || 'Sin diagnóstico',
+        tecnico: document.getElementById('tecnico').value,
+        total: total,
+        abono: abono,
+        resta: total - abono,
+        estado: 'En Revision'
+      };
+
+      ordenes.unshift(nuevaOrden);
+      contadorID++;
+      guardarDatos();
+      renderizarOrdenes();
+
+      document.getElementById('cliente').value = '';
+      document.getElementById('telefono').value = '';
+      document.getElementById('equipo').value = '';
+      document.getElementById('falla').value = '';
+      document.getElementById('montoTotal').value = '0';
+      document.getElementById('montoAbono').value = '0';
+      calcularSaldo();
+    }
+
+    function cambiarEstado(index, nuevoEstado) {
+      ordenes[index].estado = nuevoEstado;
+      guardarDatos();
+      renderizarOrdenes();
+    }
+
+    function eliminarOrden(index) {
+      if (confirm('¿Seguro que deseas eliminar esta orden?')) {
+        ordenes.splice(index, 1);
+        guardarDatos();
+        renderizarOrdenes();
+      }
+    }
+
+    function guardarDatos() {
+      localStorage.setItem('celupro_ordenes', JSON.stringify(ordenes));
+      localStorage.setItem('celupro_contador', contadorID.toString());
+    }
+
+    function renderizarOrdenes(lista = ordenes) {
+      const tbody = document.getElementById('listaOrdenes');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (lista.length === 0) {
+        tbody.innerHTML = <tr><td colspan="5" class="text-center py-6 text-slate-500">No hay órdenes registradas aún.</td></tr>;
+        return;
+      }
+
+      lista.forEach((ord, index) => {
+        const colorEstado = {
+          'En Revision': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+          'En Reparacion': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+          'Listo': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+          'Entregado': 'bg-slate-700/50 text-slate-400 border-slate-600'
+        }[ord.estado] || 'bg-slate-700/50 text-slate-400 border-slate-600';
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-700/30 transition-colors">
+            <td class="py-3 px-3">
+              <span class="font-mono text-xs text-indigo-400 font-bold block">${ord.id}</span>
+              <span class="font-medium text-white">${ord.cliente}</span>
+              <span class="block text-xs text-slate-400">${ord.telefono}</span>
+            </td>
+            <td class="py-3 px-3">
+              <span class="font-medium text-white block">${ord.equipo}</span>
+              <span class="text-xs text-slate-400 line-clamp-1">${ord.falla}</span>
+              <span class="text-[10px] text-slate-500">Téc: ${ord.tecnico}</span>
+            </td>
+            <td class="py-3 px-3">
+              <select onchange="cambiarEstado(${index}, this.value)" class="text-xs rounded-full px-2 py-1 font-semibold border ${colorEstado} bg-slate-900 focus:outline-none cursor-pointer text-white">
+                <option value="En Revision" ${ord.estado === 'En Revision' ? 'selected' : ''}>En Revision</option>
+                <option value="En Reparacion" ${ord.estado === 'En Reparacion' ? 'selected' : ''}>En Reparacion</option>
+                <option value="Listo" ${ord.estado === 'Listo' ? 'selected' : ''}>Listo</option>
+                <option value="Entregado" ${ord.estado === 'Entregado' ? 'selected' : ''}>Entregado</option>
+              </select>
+            </td>
+            <td class="py-3 px-3 text-xs">
+              <span class="block">Total: <strong class="text-white">$${ord.total}</strong></span>
+              <span class="block text-emerald-400">Abono: $${ord.abono}</span>
+              <span class="block text-rose-400 font-bold">Resta: $${ord.resta}</span>
+            </td>
+            <td class="py-3 px-3 text-center">
+              <button onclick="eliminarOrden(${index})" class="px-2 py-1 bg-rose-500/20 text-rose-400 text-xs rounded hover:bg-rose-500/40">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function filtrarOrdenes() {
+      const texto = document.getElementById('buscar').value.toLowerCase();
+      const filtradas = ordenes.filter(o =>
+        o.cliente.toLowerCase().includes(texto) ||
+        o.equipo.toLowerCase().includes(texto) ||
+        o.id.toLowerCase().includes(texto)
+      );
+      renderizarOrdenes(filtradas);
+    }
   </script>
 </body>
 </html>
