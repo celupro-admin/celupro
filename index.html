@@ -7,145 +7,110 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+<body class="bg-slate-100 text-slate-800 min-h-screen font-sans">
 
-  <!-- PANTALLA DE LOGIN -->
-  <div id="loginScreen" class="fixed inset-0 bg-slate-950 flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
-      <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-20 h-20 mx-auto mb-3 object-contain rounded-xl bg-black p-1 border border-slate-700 shadow-md">
-      <h1 class="text-2xl font-bold tracking-wide text-white">CELUPRO</h1>
-      <p class="text-xs text-slate-400 mb-6">Sistema de Gestión de Servicio Técnico</p>
-      
-      <div class="space-y-4 text-left">
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Usuario</label>
-          <input type="text" id="loginUser" value="admin" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Contraseña</label>
-          <input type="password" id="loginPass" value="1234" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-        </div>
-        
-        <button id="btnEntrar" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors mt-2 shadow-lg shadow-blue-600/30">
-          Entrar
-        </button>
+  <!-- HEADER SUPERIOR -->
+  <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="flex items-center gap-3">
+      <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-10 h-10 object-contain rounded-lg bg-black p-1 border border-slate-700">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 tracking-wide">CELUPRO</h1>
+        <p class="text-xs text-slate-400">Resumen general del taller</p>
       </div>
     </div>
-  </div>
+    <div>
+      <button id="btnAbrirModal" type="button" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-4 py-2.5 rounded-xl shadow-md transition-colors">
+        + Crear Nueva Orden
+      </button>
+    </div>
+  </header>
 
-  <!-- APLICACIÓN PRINCIPAL -->
-  <div id="mainApp" style="display: none;" class="w-full min-h-screen flex flex-col bg-slate-100 text-slate-800">
-    
-    <!-- HEADER SUPERIOR -->
-    <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div class="flex items-center gap-3">
-        <img src="https://lh3.googleusercontent.com/d/138CSSMy9-2dI3AS_oNIs8l0VttVU9_nb" alt="Celupro Logo" class="w-10 h-10 object-contain rounded-lg bg-black p-1 border border-slate-700">
+  <main class="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
+
+    <!-- TARJETAS DE MÉTRICAS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
-          <h1 class="text-xl font-bold text-slate-900 tracking-wide">CELUPRO</h1>
-          <p class="text-xs text-slate-400">Resumen general del taller</p>
+          <p class="text-xs text-slate-500 font-medium">Órdenes activas</p>
+          <h3 id="cardOrdenesActivas" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
+          <span id="cardTotalOrdenes" class="text-[11px] text-slate-400">0 total</span>
         </div>
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold">📋</div>
       </div>
-      <div class="flex items-center gap-3">
-        <button id="btnAbrirModal" type="button" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-4 py-2.5 rounded-xl shadow-md transition-colors">
-          + Crear Nueva Orden
-        </button>
-        <button id="btnCerrar" type="button" class="bg-slate-200 hover:bg-slate-300 text-xs px-3 py-2.5 rounded-xl transition-colors text-slate-700 font-semibold">
-          Cerrar Sesión
-        </button>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs text-slate-500 font-medium">Ingresos del mes</p>
+          <h3 id="cardIngresosMes" class="text-2xl font-bold text-slate-900 mt-1">$0.00</h3>
+          <span id="cardIngresosTotal" class="text-[11px] text-emerald-600 font-medium">$0.00 histórico</span>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">💲</div>
       </div>
-    </header>
 
-    <main class="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
-
-      <!-- TARJETAS DE MÉTRICAS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Órdenes activas -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p class="text-xs text-slate-500 font-medium">Órdenes activas</p>
-            <h3 id="cardOrdenesActivas" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
-            <span id="cardTotalOrdenes" class="text-[11px] text-slate-400">0 total</span>
-          </div>
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold">📋</div>
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs text-slate-500 font-medium">Clientes</p>
+          <h3 id="cardClientes" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
+          <span id="cardClientesMes" class="text-[11px] text-slate-400">0 este mes</span>
         </div>
+        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg font-bold">👥</div>
+      </div>
 
-        <!-- Ingresos del mes -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p class="text-xs text-slate-500 font-medium">Ingresos del mes</p>
-            <h3 id="cardIngresosMes" class="text-2xl font-bold text-slate-900 mt-1">$0.00</h3>
-            <span id="cardIngresosTotal" class="text-[11px] text-emerald-600 font-medium">$0.00 histórico</span>
-          </div>
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">💲</div>
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs text-slate-500 font-medium">Transacciones (Por Cobrar)</p>
+          <h3 id="cardPorCobrar" class="text-2xl font-bold text-rose-600 mt-1">$0.00</h3>
+          <span id="cardCantTrans" class="text-[11px] text-slate-400">0 pendientes</span>
         </div>
+        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg font-bold">💳</div>
+      </div>
+    </div>
 
-        <!-- Clientes -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p class="text-xs text-slate-500 font-medium">Clientes</p>
-            <h3 id="cardClientes" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
-            <span id="cardClientesMes" class="text-[11px] text-slate-400">0 este mes</span>
-          </div>
-          <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg font-bold">👥</div>
+    <!-- GRÁFICOS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-bold text-slate-900">Ingresos semanales</h3>
+          <span id="totalSemanaTxt" class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-lg">$0.00</span>
         </div>
-
-        <!-- Transacciones / Por Cobrar -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p class="text-xs text-slate-500 font-medium">Transacciones (Por Cobrar)</p>
-            <h3 id="cardPorCobrar" class="text-2xl font-bold text-rose-600 mt-1">$0.00</h3>
-            <span id="cardCantTrans" class="text-[11px] text-slate-400">0 pendientes</span>
-          </div>
-          <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg font-bold">💳</div>
+        <div class="h-56">
+          <canvas id="chartBarras"></canvas>
         </div>
       </div>
 
-      <!-- GRÁFICOS -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <div class="flex justify-between items-center">
-            <h3 class="text-sm font-bold text-slate-900">Ingresos semanales</h3>
-            <span id="totalSemanaTxt" class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-lg">$0.00</span>
-          </div>
-          <div class="h-56">
-            <canvas id="chartBarras"></canvas>
-          </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <h3 class="text-sm font-bold text-slate-900">Órdenes por estado</h3>
-          <div class="h-56 flex justify-center items-center">
-            <canvas id="chartDona"></canvas>
-          </div>
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-sm font-bold text-slate-900">Órdenes por estado</h3>
+        <div class="h-56 flex justify-center items-center">
+          <canvas id="chartDona"></canvas>
         </div>
       </div>
+    </div>
 
-      <!-- TABLA DE ÓRDENES -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h3 class="text-base font-bold text-slate-900">Órdenes recientes</h3>
-          <input type="text" id="buscar" placeholder="Buscar cliente, equipo o ID..." class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 w-full sm:w-64">
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-400 uppercase font-semibold border-b border-slate-100">
-              <tr>
-                <th class="py-3 px-3">ORDEN</th>
-                <th class="py-3 px-3">CLIENTE</th>
-                <th class="py-3 px-3">EQUIPO</th>
-                <th class="py-3 px-3">ESTADO</th>
-                <th class="py-3 px-3">TÉCNICO</th>
-                <th class="py-3 px-3">COSTO</th>
-                <th class="py-3 px-3 text-center">ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody id="listaOrdenes" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
+    <!-- TABLA DE ÓRDENES -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h3 class="text-base font-bold text-slate-900">Órdenes recientes</h3>
+        <input type="text" id="buscar" placeholder="Buscar cliente, equipo o ID..." class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 w-full sm:w-64">
       </div>
-    </main>
-  </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-400 uppercase font-semibold border-b border-slate-100">
+            <tr>
+              <th class="py-3 px-3">ORDEN</th>
+              <th class="py-3 px-3">CLIENTE</th>
+              <th class="py-3 px-3">EQUIPO</th>
+              <th class="py-3 px-3">ESTADO</th>
+              <th class="py-3 px-3">TÉCNICO</th>
+              <th class="py-3 px-3">COSTO</th>
+              <th class="py-3 px-3 text-center">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody id="listaOrdenes" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
 
   <!-- MODAL NUEVA ORDEN -->
   <div id="modalOrden" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
@@ -206,11 +171,7 @@
       let ordenes = JSON.parse(localStorage.getItem('celupro_ordenes')) || [];
       let contadorID = parseInt(localStorage.getItem('celupro_contador')) || 101;
 
-      const loginScreen = document.getElementById('loginScreen');
-      const mainApp = document.getElementById('mainApp');
       const modalOrden = document.getElementById('modalOrden');
-      const btnEntrar = document.getElementById('btnEntrar');
-      const btnCerrar = document.getElementById('btnCerrar');
       const btnAbrirModal = document.getElementById('btnAbrirModal');
       const btnCerrarModal = document.getElementById('btnCerrarModal');
       const btnGuardar = document.getElementById('btnGuardar');
@@ -220,24 +181,6 @@
 
       let chartBarrasInstancia = null;
       let chartDonaInstancia = null;
-
-      btnEntrar.onclick = function() {
-        const u = document.getElementById('loginUser').value.trim();
-        const p = document.getElementById('loginPass').value.trim();
-
-        if (u === "admin" && p === "1234") {
-          loginScreen.style.display = 'none';
-          mainApp.style.display = 'flex';
-          renderizarTodo();
-        } else {
-          alert('Usuario o contraseña incorrectos (Usar admin / 1234)');
-        }
-      };
-
-      btnCerrar.onclick = function() {
-        mainApp.style.display = 'none';
-        loginScreen.style.display = 'flex';
-      };
 
       btnAbrirModal.onclick = () => { modalOrden.classList.remove('hidden'); modalOrden.classList.add('flex'); };
       btnCerrarModal.onclick = () => { modalOrden.classList.add('hidden'); modalOrden.classList.remove('flex'); };
@@ -311,7 +254,6 @@
 
         const activas = ordenes.filter(o => o.estado !== 'Entregado').length;
         
-        // Ingresos del mes
         const ordenesMes = ordenes.filter(o => {
           const f = o.fecha ? new Date(o.fecha) : new Date();
           return f.getMonth() === mesActual && f.getFullYear() === anoActual;
@@ -319,11 +261,9 @@
         const ingresosMes = ordenesMes.reduce((acc, o) => acc + (o.abono || 0), 0);
         const ingresosTotal = ordenes.reduce((acc, o) => acc + (o.abono || 0), 0);
 
-        // Clientes
         const clientesUnicos = new Set(ordenes.map(o => o.cliente.toLowerCase())).size;
         const clientesMes = new Set(ordenesMes.map(o => o.cliente.toLowerCase())).size;
 
-        // Transacciones pendientes
         const pendientes = ordenes.filter(o => o.resta > 0);
         const porCobrar = pendientes.reduce((acc, o) => acc + (o.resta || 0), 0);
 
@@ -449,6 +389,8 @@
         });
         renderizarOrdenes(filtradas);
       };
+
+      renderizarTodo();
     });
   </script>
 </body>
